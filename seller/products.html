@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Products - DesiMall Seller Center</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="../css/panel.css">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <link rel="stylesheet" href="../css/global-theme.css">
+  <link rel="stylesheet" href="../css/seller.css">
+<style>
+.settlement-calculator{background:#111b2a;border:1px solid #35465f;border-radius:14px;padding:16px}.settlement-title{display:flex;justify-content:space-between;gap:12px;align-items:center;padding-bottom:10px;border-bottom:1px solid #334155}.settlement-title span{font-size:12px;color:#fdba74}.settlement-row{display:flex;justify-content:space-between;gap:14px;padding:9px 2px;color:#cbd5e1}.settlement-row.total{border-top:1px solid #334155;font-weight:800}.settlement-row.grand{border-top:1px solid #475569;font-size:18px;color:#fff;font-weight:900}.settlement-warning{margin-top:10px;padding:9px 11px;border-radius:8px;background:#78350f;color:#fef3c7}.settlement-warning.good{background:#14532d;color:#dcfce7}.settlement-warning.bad{background:#7f1d1d;color:#fee2e2}
+</style><link rel="stylesheet" href="../css/seller-simple.css"><link rel="stylesheet" href="../css/seller-product-v2.css"><link rel="stylesheet" href="../css/seller-pro.css"><link rel="stylesheet" href="../css/seller-professional-v1-1.css">
+
+<style id="productPhotoRequiredV018">
+.photo-needed{display:inline-flex;align-items:center;gap:5px;margin-top:5px;padding:3px 7px;border-radius:999px;background:#4a251d;color:#ff9a74;font-size:10px;font-weight:800}
+.spv2-field.invalid .spv2-upload-box,.spv2-field.invalid input[type=file]{outline:2px solid #ef4444!important;outline-offset:2px}
+</style>
+</head>
+<body data-seller-page="products">
+<div class="panel-shell">
+  <aside class="panel-sidebar"></aside>
+
+  <main class="panel-main">
+    <header class="panel-topbar">
+      <div>
+        <h1>Products</h1>
+        <p id="sellerWelcome">Manage products, pricing, inventory and approval status.</p>
+      </div>
+      <div class="top-actions">
+        <a class="btn btn-light" href="https://desimall-customer.onrender.com/"><i class="fa-solid fa-store"></i> Customer Store</a>
+        <button class="btn btn-light" id="sellerLogout"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+        <button class="btn btn-primary" id="openProductModal"><i class="fa-solid fa-plus"></i> Add Product</button>
+      </div>
+    </header>
+<section class="stats-grid seller-kpi-grid">
+      <article class="stat-card"><div><small>Total Products</small><strong id="sellerProductCount">0</strong></div><span class="stat-icon"><i class="fa-solid fa-box"></i></span></article>
+      <article class="stat-card"><div><small>Active Listings</small><strong id="sellerActiveCount">0</strong></div><span class="stat-icon"><i class="fa-solid fa-circle-check"></i></span></article>
+      <article class="stat-card"><div><small>Pending Approval</small><strong id="sellerPendingCount">0</strong></div><span class="stat-icon"><i class="fa-solid fa-clock"></i></span></article>
+      <article class="stat-card"><div><small>Available Stock</small><strong id="sellerStockCount">0</strong></div><span class="stat-icon"><i class="fa-solid fa-boxes-stacked"></i></span></article>
+      <span id="sellerInactiveCount" hidden>0</span>
+      <span id="sellerLowStock" hidden>0</span>
+      <span id="sellerSoldCount" hidden>0</span>
+      <span id="sellerValue" hidden>₹0</span>
+    </section>
+
+    <section class="panel-card" id="products" style="margin-top:18px">
+      <div class="card-head catalogue-head">
+        <div><h2>Product List</h2><p class="muted">New products and major edits may require approval.</p></div>
+        <div class="catalogue-tools">
+          <input id="sellerSearch" placeholder="Search name, SKU or category">
+          <select id="sellerStatusFilter" aria-label="Filter by status">
+            <option value="">All Statuses</option><option value="active">Active Listings</option><option value="pending">Pending Approval</option><option value="inactive">Hidden</option><option value="out">Out of Stock</option><option value="low">Low stock</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="bulk-bar" id="bulkBar">
+        <strong><span id="selectedCount">0</span> selected</strong>
+        <select id="bulkAction">
+          <option value="">Choose bulk action</option>
+          <option value="stock-add">Add stock</option>
+          <option value="stock-set">Set stock</option>
+          <option value="discount">Set discount %</option>
+          <option value="inactive">Hide products</option>
+          <option value="active">Show products</option>
+        </select>
+        <input id="bulkValue" type="number" min="0" placeholder="Value">
+        <button class="btn btn-primary" id="applyBulk" type="button"><i class="fa-solid fa-bolt"></i> Apply</button>
+        <button class="btn btn-light" id="clearSelection" type="button">Clear</button>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data-table seller-product-table">
+          <thead><tr>
+            <th><input type="checkbox" id="selectAllProducts" aria-label="Select all products"></th>
+            <th>Product</th><th>SKU / Category</th><th>Price</th><th>Discount</th><th>Inventory</th><th>Status</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="sellerProductBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+<div hidden aria-hidden="true">
+  <span id="inventoryAvailable">0</span>
+  <span id="inventoryReserved">0</span>
+  <span id="inventorySold">0</span>
+  <span id="inventoryOut">0</span>
+</div>
+
+</main>
+</div>
+
+<div class="modal spv2-modal" id="productModal">
+  <div class="modal-box">
+    <div class="modal-head"><h2 id="productModalTitle">Add Product</h2><button class="close-btn" id="closeProductModal"><i class="fa-solid fa-xmark"></i></button></div>
+    <form id="productForm" novalidate>
+      <input type="hidden" id="editProductId"><input type="hidden" id="pfImage"><input type="hidden" id="pfPrice"><input type="hidden" id="pfDiscountPreview">
+      <div class="spv2-shell">
+        <aside class="spv2-side" id="productWizardSteps">
+          <div class="spv2-step active" data-step="1"><span class="n">1</span><div><strong>पहचान</strong><small>नाम और श्रेणी</small></div></div>
+          <div class="spv2-step" data-step="2"><span class="n">2</span><div><strong>दाम</strong><small>MRP और settlement</small></div></div>
+          <div class="spv2-step" data-step="3"><span class="n">3</span><div><strong>Inventory</strong><small>मात्रा और unit</small></div></div>
+          <div class="spv2-step" data-step="4"><span class="n">4</span><div><strong>फोटो व जानकारी</strong><small>ग्राहक को क्या दिखेगा</small></div></div>
+          <div class="spv2-step" data-step="5"><span class="n">5</span><div><strong>Preview</strong><small>जाँच कर सेव करें</small></div></div>
+        </aside>
+        <section class="spv2-main">
+          <div class="spv2-pane active" data-pane="1">
+            <h3>Product Identity</h3><p>Start with the product name and category.</p>
+            <div class="spv2-grid">
+              <div class="spv2-field full" data-required="pfName"><label>Product Name *</label><input id="pfName" autocomplete="off" placeholder="जैसे Fortune Rice Bran Oil"><span class="spv2-error">Products का नाम जरूरी है।</span></div>
+              <div class="spv2-field full"><label>Category *</label><div class="spv2-category-grid" id="categoryCards">
+                <button type="button" class="spv2-category" data-category="Grocery"><i class="fa-solid fa-basket-shopping"></i>Grocery</button>
+                <button type="button" class="spv2-category" data-category="Fashion"><i class="fa-solid fa-shirt"></i>Fashion</button>
+                <button type="button" class="spv2-category" data-category="Electronics"><i class="fa-solid fa-plug"></i>Electronics</button>
+                <button type="button" class="spv2-category active" data-category="General"><i class="fa-solid fa-box"></i>Other</button>
+              </div><select id="pfCategory" class="spv2-hidden"><option>Grocery</option><option>Fashion</option><option>Electronics</option><option>General</option></select></div>
+              <div class="spv2-field"><label>Brand</label><input id="pfBrand" placeholder="Optional"></div>
+              <div class="spv2-field"><label>SKU</label><input id="pfSku" placeholder="खाली छोड़ें तो auto बनेगा"></div>
+              <div class="spv2-field full"><label>Listing Status</label><select id="pfStatus"><option value="">Default / current</option><option value="Active">Active Listings</option><option value="Inactive">Hidden</option></select><small>New products may require admin approval.</small></div>
+            </div>
+          </div>
+          <div class="spv2-pane" data-pane="2">
+            <h3>Pricing & Settlement</h3><p>Enter your settlement amount to calculate customer pricing.</p>
+            <div class="spv2-grid">
+              <div class="spv2-field" data-required="pfMrp"><label>MRP (₹) *</label><input id="pfMrp" type="number" min="1" step="0.01"><span class="spv2-error">सही MRP भरें।</span></div>
+              <div class="spv2-field" data-required="pfSettlement"><label>Your Settlement (₹) *</label><input id="pfSettlement" type="number" min="1" step="0.01"><span class="spv2-error">Settlement राशि जरूरी है।</span></div>
+              <div class="spv2-field full spv2-price">
+                <div class="spv2-price-row"><span>You Receive</span><strong id="pfSettlementOut">₹0</strong></div>
+                <div class="spv2-price-row"><span>DesiMall commission <small id="pfCommissionRate">(2%)</small></span><strong id="pfCommissionOut">+₹0</strong></div>
+                <div class="spv2-price-row"><span>Fees & taxes</span><strong id="pfFeesOut">+₹0</strong></div>
+                <div class="spv2-price-row"><span>Seller price</span><strong id="pfSellerPriceOut">₹0</strong></div>
+                <div class="spv2-price-row"><span>Customer logistics</span><strong id="pfLogisticsOut">+₹0</strong></div>
+                <div class="spv2-price-row"><span>Customer price</span><strong id="pfListingOut">₹0</strong></div>
+                <span id="pfCommissionSource" class="spv2-hidden">Marketplace Default</span>
+                <div class="spv2-warning" id="pfPricingWarning">MRP और settlement भरें।</div>
+              </div>
+            </div>
+          </div>
+          <div class="spv2-pane" data-pane="3">
+            <h3>Stock & Unit</h3><p>Set the quantity currently available for sale.</p>
+            <div class="spv2-grid">
+              <div class="spv2-field" data-required="pfStock"><label>Total Stock *</label><input id="pfStock" type="number" min="0" step="1"><span class="spv2-error">Inventory संख्या भरें।</span></div>
+              <div class="spv2-field"><label>Low stock warning</label><input id="pfLowStock" type="number" min="0" step="1" value="5"></div>
+              <div class="spv2-field"><label>Unit type *</label><select id="pfUnit"><option>Piece</option><option>Pack</option><option>Box</option><option>Set</option><option>Dozen</option><option>Kg</option><option>Gram</option><option>Litre</option><option>ml</option><option>Meter</option></select></div>
+              <div class="spv2-field"><label>Unit quantity / weight *</label><input id="pfUnitValue" type="number" min="0.01" step="0.01" value="1"></div>
+              <div class="spv2-field full"><label>Unit label preview</label><input id="pfUnitPreview" readonly value="1 Piece"></div>
+              <input id="pfReserved" type="hidden" value="0"><input id="pfSold" type="hidden" value="0">
+            </div>
+          </div>
+          <div class="spv2-pane" data-pane="4">
+            <h3>Photos & Details</h3><p>Clear images and concise details improve customer confidence.</p>
+            <div class="spv2-grid">
+              <div class="spv2-field full"><label>Product image *</label><label class="spv2-upload" for="pfImageFile"><div><i class="fa-solid fa-camera fa-2x"></i><strong>Choose from camera or gallery</strong><span id="pfImageStatus">JPG, PNG या WEBP • Max 8 MB • Required</span></div><img id="pfImagePreview" src="../assets/products/noimage.jpg" alt="Preview"></label><input id="pfImageFile" class="spv2-hidden" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"></div>
+              <div class="spv2-field full"><label>Product Description</label><textarea id="pfDescription" rows="4" placeholder="Key features, usage and important information"></textarea></div>
+              <div class="spv2-field full spv2-extra" data-extra="Grocery"><label>Grocery details</label><div class="spv2-grid"><input id="pfExpiry" placeholder="Expiry / shelf life"><input id="pfFssai" placeholder="FSSAI (optional)"></div></div>
+              <div class="spv2-field full spv2-extra" data-extra="Fashion"><label>Fashion details</label><div class="spv2-grid"><input id="pfColor" placeholder="Color"><input id="pfSize" placeholder="Size"><input id="pfFabric" placeholder="Fabric"><input id="pfGender" placeholder="Men / Women / Kids"></div></div>
+              <div class="spv2-field full spv2-extra" data-extra="Electronics"><label>Electronics details</label><div class="spv2-grid"><input id="pfModel" placeholder="Model"><input id="pfWarranty" placeholder="Warranty"><input id="pfVoltage" placeholder="Voltage"><input id="pfTechBrand" placeholder="Brand"></div></div>
+            </div>
+          </div>
+          <div class="spv2-pane" data-pane="5">
+            <h3>Review Product</h3><p>Review the information customers will see.</p>
+            <div class="spv2-preview-card"><img id="previewImage" src="../assets/products/noimage.jpg"><div><h3 id="previewName">Product name</h3><div class="spv2-preview-price" id="previewPrice">₹0</div><div class="spv2-preview-meta"><span class="spv2-chip" id="previewCategory">General</span><span class="spv2-chip" id="previewUnit">1 Piece</span><span class="spv2-chip" id="previewStock">Stock 0</span></div><p id="previewDescription">Description यहाँ दिखेगा।</p><div class="spv2-price-row"><span>You Receive</span><strong id="previewSettlement">₹0</strong></div></div></div>
+          </div>
+        </section>
+      </div>
+      <footer class="spv2-footer"><span class="spv2-save-state" id="draftState"><i class="fa-solid fa-cloud"></i> Draft auto-save</span><div class="right"><button type="button" class="btn btn-light" id="wizardBack">Back</button><button type="button" class="btn btn-primary" id="wizardNext">Next</button><button type="submit" class="btn btn-primary spv2-hidden" id="wizardSave"><i class="fa-solid fa-floppy-disk"></i> Save Product</button></div></footer>
+    </form>
+  </div>
+</div>
+
+<div class="toast-panel" id="panelToast"></div>
+<script src="../js/api.js"></script><script src="../js/seller-pro.js"></script><script src="../js/seller-shell.js"></script><script src="../js/upload.js"></script><script src="../js/seller.js"></script><script src="../js/seller-page.js"></script><script src="../js/ui-preferences.js"></script><script src="../js/analytics.js"></script>
+<script src="../js/seller-simple.js"></script></body>
+</html>

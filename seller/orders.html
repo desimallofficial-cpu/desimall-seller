@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Orders - DesiMall</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="../css/panel.css">
+  <link rel="stylesheet" href="../css/global-theme.css">
+  <link rel="stylesheet" href="../css/seller.css">
+<link rel="stylesheet" href="../css/seller-simple.css"><link rel="stylesheet" href="../css/seller-pro.css"><link rel="stylesheet" href="../css/seller-professional-v1-1.css">
+</head>
+<body>
+<div class="panel-shell">
+  <aside class="panel-sidebar"></aside>
+
+  <main class="panel-main">
+    <header class="panel-topbar">
+      <div><h1>Orders</h1><p id="sellerWelcome">Orders Approved करें, Products तैयार करें और DesiMall राइडर को सौंपें।</p></div>
+      <div class="top-actions">
+        <a class="btn btn-light" href="https://desimall-customer.onrender.com/"><i class="fa-solid fa-store"></i> Customer Store</a>
+        <button class="btn btn-light" id="sellerLogout"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+        <button class="btn btn-primary" id="refreshOrders"><i class="fa-solid fa-rotate"></i> ताज़ा करें</button>
+      </div>
+    </header>
+
+<section class="seller-page-identity identity-orders">
+  <div class="identity-icon"><i class="fa-solid fa-bag-shopping"></i></div>
+  <div><strong>आज के Orders</strong><span>नया Orders Approved करें, Products तैयार करें और समय पर राइडर को सौंपें।</span></div>
+</section>
+
+    <section class="stats-grid seller-order-stats">
+      <article class="stat-card"><div><small>कुल Orders</small><strong id="statTotal">0</strong></div><span class="stat-icon"><i class="fa-solid fa-receipt"></i></span></article>
+      <article class="stat-card"><div><small>नया Orders</small><strong id="statPending">0</strong></div><span class="stat-icon"><i class="fa-solid fa-clock"></i></span></article>
+      <article class="stat-card"><div><small>राइडर के लिए तैयार</small><strong id="statReady">0</strong></div><span class="stat-icon"><i class="fa-solid fa-box"></i></span></article>
+      <article class="stat-card"><div><small>तैयार हो रहा</small><strong id="statPreparing">0</strong></div><span class="stat-icon"><i class="fa-solid fa-truck-fast"></i></span></article>
+      <article class="stat-card"><div><small>Approved किया</small><strong id="statAccepted">0</strong></div><span class="stat-icon"><i class="fa-solid fa-circle-check"></i></span></article>
+      <article class="stat-card"><div><small>Orders की कुल राशि</small><strong id="statValue">₹0</strong></div><span class="stat-icon"><i class="fa-solid fa-indian-rupee-sign"></i></span></article>
+    </section>
+
+    <section class="panel-card seller-order-panel">
+      <div class="card-head catalogue-head">
+        <div><h2>Orders पर्ची</h2><p class="muted">दुकानदार Products तैयार करके राइडर को सौंपेगा; Next की डिलीवरी राइडर संभालेगा।</p></div>
+        <div class="catalogue-tools">
+          <input id="orderSearch" placeholder="Orders, ग्राहक, मोबाइल या Products खोजें">
+          <select id="orderStatusFilter">
+            <option value="">All Statuses</option>
+            <option value="Pending">नया Orders</option><option value="Accepted">Approved किया</option><option value="Preparing">तैयार हो रहा</option><option value="Ready for Pickup">राइडर के लिए तैयार</option><option value="Pickup Assigned">राइडर तय</option><option value="Picked Up">राइडर ने लिया</option><option value="On the Way">रास्ते में</option><option value="Delivered">डिलीवर हो गया</option><option value="Rejected">अApproved</option><option value="Cancelled">रद्द</option><option value="Returned">Returns</option></select>
+        </div>
+      </div>
+
+      <div class="order-filter-chips" id="orderFilterChips">
+        <button class="active" data-status="">सभी</button>
+        <button data-status="Pending">नया Orders</button><button data-status="Accepted">Approved किया</button><button data-status="Preparing">तैयार हो रहा</button><button data-status="Ready for Pickup">राइडर के लिए तैयार</button><button data-status="Pickup Assigned">राइडर तय</button><button data-status="Picked Up">राइडर ने लिया</button><button data-status="On the Way">रास्ते में</button><button data-status="Delivered">डिलीवर</button><button data-status="Rejected">अApproved</button><button data-status="Cancelled">रद्द</button>
+      </div>
+
+      <div id="sellerOrdersList" class="seller-orders-list"></div>
+      <div id="sellerOrdersEmpty" class="empty-panel" hidden><i class="fa-solid fa-box-open"></i><strong>अभी कोई Orders नहीं मिला</strong><span>आपके Products के Orders यहाँ दिखाई देंगे।</span></div>
+    </section>
+  
+<section class="dukaan-advisor">
+  <div class="advisor-head"><div class="advisor-mark"><i class="fa-solid fa-handshake"></i></div><div><h2>Orders संभालने की सलाह</h2><p>ग्राहक का भरोसा समय और सही पैकिंग से बनता है।</p></div></div>
+  <div class="advisor-grid">
+    <article><i class="fa-solid fa-clock"></i><div><strong>जल्दी Approved करें</strong><span>नया Orders मिलने पर समय से Approved या कारण सहित अApproved करें।</span></div></article>
+    <article><i class="fa-solid fa-box"></i><div><strong>मजबूत पैकिंग करें</strong><span>Products राइडर को देने से पहले मात्रा और पैकिंग जरूर जाँचें।</span></div></article>
+    <article><i class="fa-solid fa-user-check"></i><div><strong>राइडर को सही Products दें</strong><span>Orders नंबर मिलाकर ही पैकेट सौंपें।</span></div></article>
+  </div>
+</section>
+</main>
+</div>
+
+
+<div class="modal" id="reasonModal"><div class="modal-box shipping-modal-box"><div class="modal-head"><h2 id="reasonModalTitle">Reason</h2><button class="close-btn" id="closeReasonModal"><i class="fa-solid fa-xmark"></i></button></div><form id="reasonForm" class="form-grid"><input type="hidden" id="reasonOrderId"><input type="hidden" id="reasonStatus"><div class="field full"><label id="reasonLabel">Reason</label><textarea id="reasonText" rows="4" placeholder="Enter a clear reason" required></textarea></div><div class="field full"><button class="btn btn-danger" type="submit" id="reasonSubmitBtn">Confirm</button></div></form></div></div>
+
+<div class="modal" id="detailsModal">
+  <div class="modal-box order-details-modal">
+    <div class="modal-head">
+      <div>
+        <h2>Orders का पूरा विवरण</h2>
+        <p class="muted modal-subtitle">ग्राहक, भुगतान, Products और डिलीवरी की जानकारी</p>
+      </div>
+      <button class="close-btn" id="closeDetailsModal" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="orderDetailsBody"></div>
+    <div class="document-action-bar" id="documentActionBar" hidden>
+      <button class="btn btn-doc" id="printInvoiceBtn"><i class="fa-solid fa-file-invoice"></i> Invoice</button>
+      <button class="btn btn-doc" id="printPackingBtn"><i class="fa-solid fa-box"></i> Packing slip</button>
+      <button class="btn btn-doc" id="printLabelBtn"><i class="fa-solid fa-tag"></i> Shipping label</button>
+      <button class="btn btn-primary" id="printAllBtn"><i class="fa-solid fa-print"></i> Print all</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-panel" id="panelToast"></div>
+<script src="../js/api.js"></script><script src="../js/seller-pro.js"></script><script src="../js/seller-shell.js"></script>
+<script src="../js/seller-orders.js"></script>
+<script src="../js/ui-preferences.js"></script>
+<script src="../js/seller-simple.js"></script></body>
+</html>

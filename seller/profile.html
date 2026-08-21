@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Seller Profile - DesiMall</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="../css/panel.css">
+  <link rel="stylesheet" href="../css/global-theme.css">
+  <link rel="stylesheet" href="../css/seller.css">
+<style>
+.kyc-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px}.kyc-head h2{margin:0 0 6px}.kyc-head p{margin:0;color:var(--muted,#94a3b8)}.kyc-status-badge{padding:8px 12px;border-radius:999px;background:#334155;font-weight:800}.kyc-status-badge.approved{background:#166534;color:#bbf7d0}.kyc-status-badge.submitted,.kyc-status-badge.pending{background:#854d0e;color:#fde68a}.kyc-status-badge.rejected{background:#7f1d1d;color:#fecaca}.kyc-notice{padding:12px 14px;border-radius:10px;background:#1e293b;margin-bottom:18px;color:#cbd5e1}.kyc-notice.good{background:#14532d;color:#dcfce7}.kyc-notice.bad{background:#7f1d1d;color:#fee2e2}.kyc-form select,.kyc-form input[type=file]{width:100%}.doc-link{display:inline-block;margin-top:8px;color:#fb923c;font-weight:700}.hidden{display:none!important}.kyc-review-box{padding:14px;border:1px solid #334155;border-radius:10px;background:#111827}.kyc-review-box p{margin:8px 0}.kyc-review-box small{color:#94a3b8}@media(max-width:700px){.kyc-head{flex-direction:column}}
+</style><link rel="stylesheet" href="../css/seller-simple.css"><link rel="stylesheet" href="../css/seller-pro.css"><link rel="stylesheet" href="../css/seller-professional-v1-1.css">
+</head>
+<body>
+<div class="panel-shell">
+  <aside class="panel-sidebar"></aside>
+  <main class="panel-main">
+    <header class="panel-topbar"><div><h1>दुकान की पहचान</h1><p>फोटो, दुकान का नाम, लोगो, बैनर और जरूरी जानकारी अपडेट करें।</p></div><div class="top-actions"><a class="btn btn-light" href="https://desimall-customer.onrender.com/"><i class="fa-solid fa-store"></i> Customer Store</a><button class="btn btn-light" id="sellerLogout"><i class="fa-solid fa-right-from-bracket"></i> Logout</button></div></header>
+
+    <section class="panel-card brand-preview-card">
+      <div class="shop-banner-preview" id="shopBannerPreview"><div class="banner-placeholder"><i class="fa-regular fa-image"></i><span>दुकान का बैनर</span></div></div>
+      <div class="shop-brand-row"><div class="shop-logo-preview" id="shopLogoPreview"><i class="fa-solid fa-store"></i></div><div><h2 id="shopPreviewName">आपकी दुकान</h2><p id="shopPreviewOwner">दुकानदार प्रोफाइल</p></div></div>
+    </section>
+
+    <section class="panel-card seller-profile-card">
+      <form id="sellerProfileForm" class="seller-profile-form">
+        <div class="seller-avatar-editor">
+          <div class="seller-avatar seller-avatar-large" id="sellerAvatarPreview"><span>S</span></div>
+          <label class="btn btn-light" for="sellerAvatarFile"><i class="fa-solid fa-camera"></i> अपनी फोटो</label>
+          <input id="sellerAvatarFile" type="file" accept="image/jpeg,image/png,image/webp" capture="user" hidden>
+          <small>Square image recommended</small>
+        </div>
+        <div class="seller-profile-fields">
+          <div class="field"><label>दुकान का नाम</label><input id="sellerShopName" required></div>
+          <div class="field"><label>मालिक का नाम</label><input id="sellerOwnerName" required></div>
+          <div class="field"><label>मोबाइल</label><input id="sellerमोबाइल" readonly></div>
+          <div class="field"><label>ईमेल</label><input id="sellerईमेल" type="email"></div>
+          <div class="field full"><label>दुकान का पता</label><textarea id="sellerAddress" rows="4"></textarea></div>
+
+          <div class="field"><label>दुकान का लोगो</label><label class="upload-brand-control" for="shopLogoFile"><i class="fa-solid fa-cloud-arrow-up"></i><span>लोगो चुनें</span></label><input id="shopLogoFile" type="file" accept="image/jpeg,image/png,image/webp" hidden></div>
+          <div class="field"><label>दुकान का बैनर</label><label class="upload-brand-control" for="shopBannerFile"><i class="fa-solid fa-panorama"></i><span>बैनर चुनें</span></label><input id="shopBannerFile" type="file" accept="image/jpeg,image/png,image/webp" hidden></div>
+          <div class="field full"><p class="upload-help">Logo: square image recommended. Banner: wide image recommended (approximately 1600×500).</p></div>
+
+          <div class="field full"><button class="btn btn-primary" id="saveSellerProfile" type="submit"><i class="fa-solid fa-floppy-disk"></i> दुकान की जानकारी सेव करें</button><p id="sellerProfileMessage" class="profile-message"></p></div>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel-card seller-kyc-card">
+      <div class="kyc-head">
+        <div><h2><i class="fa-solid fa-id-card"></i> दुकानदार KYC और बैंक सत्यापन</h2><p>बिक्री चालू रखने के लिए सही जानकारी भरें।</p></div>
+        <span class="kyc-status-badge" id="sellerKycStatus">Not Submitted</span>
+      </div>
+      <div id="kycAccessNotice" class="kyc-notice"></div>
+      <form id="sellerKycForm" class="seller-profile-form kyc-form">
+        <div class="seller-profile-fields">
+          <div class="field"><label>व्यवसाय का प्रकार</label><select id="kycBusinessType" required><option value="">Select business type</option><option>Proprietorship</option><option>Partnership</option><option>Private Limited</option><option>LLP</option><option>Individual</option></select></div>
+          <div class="field"><label>GSTIN (optional where legally exempt)</label><input id="kycGSTIN" maxlength="15" placeholder="22AAAAA0000A1Z5"></div>
+          <div class="field"><label>PAN</label><input id="kycPAN" maxlength="10" required placeholder="ABCDE1234F"></div>
+          <div class="field"><label>Aadhaar number</label><input id="kycAadhaar" inputmode="numeric" maxlength="12" required placeholder="12-digit Aadhaar"></div>
+          <div class="field"><label>बैंक का नाम</label><input id="kycBankName" required></div>
+          <div class="field"><label>खाता संख्या</label><input id="kycAccountNumber" required></div>
+          <div class="field"><label>IFSC</label><input id="kycIFSC" maxlength="11" required placeholder="SBIN0000001"></div>
+          <div class="field"><label>UPI ID (optional)</label><input id="kycUPI" placeholder="name@bank"></div>
+
+          <div class="field"><label>Aadhaar document *</label><input id="aadhaarDoc" type="file" accept="image/jpeg,image/png,image/webp,application/pdf"><a id="aadhaarDocLink" class="doc-link hidden" target="_blank" rel="noopener">View uploaded</a></div>
+          <div class="field"><label>PAN document *</label><input id="panDoc" type="file" accept="image/jpeg,image/png,image/webp,application/pdf"><a id="panDocLink" class="doc-link hidden" target="_blank" rel="noopener">View uploaded</a></div>
+          <div class="field"><label>GST certificate</label><input id="gstDoc" type="file" accept="image/jpeg,image/png,image/webp,application/pdf"><a id="gstDocLink" class="doc-link hidden" target="_blank" rel="noopener">View uploaded</a></div>
+          <div class="field"><label>Cancelled cheque / passbook *</label><input id="bankDoc" type="file" accept="image/jpeg,image/png,image/webp,application/pdf"><a id="bankDocLink" class="doc-link hidden" target="_blank" rel="noopener">View uploaded</a></div>
+
+          <div class="field full"><div class="kyc-review-box"><strong>जाँच की टिप्पणी</strong><p id="sellerKycNote">No review note.</p><small id="sellerKycDates"></small></div></div>
+          <div class="field full"><button class="btn btn-primary" id="submitSellerKyc" type="submit"><i class="fa-solid fa-paper-plane"></i> KYC जाँच के लिए भेजें</button><p id="sellerKycMessage" class="profile-message"></p></div>
+        </div>
+      </form>
+    </section>
+  </main>
+</div>
+<script src="../js/api.js"></script><script src="../js/seller-pro.js"></script><script src="../js/seller-shell.js"></script><script src="../js/seller-profile.js"></script><script src="../js/ui-preferences.js"></script>
+<script src="../js/seller-simple.js"></script></body></html>

@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>दुकान का Inventory - DesiMall</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="../css/panel.css">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <link rel="stylesheet" href="../css/global-theme.css">
+  <link rel="stylesheet" href="../css/seller.css">
+<style>
+.settlement-calculator{background:#111b2a;border:1px solid #35465f;border-radius:14px;padding:16px}.settlement-title{display:flex;justify-content:space-between;gap:12px;align-items:center;padding-bottom:10px;border-bottom:1px solid #334155}.settlement-title span{font-size:12px;color:#fdba74}.settlement-row{display:flex;justify-content:space-between;gap:14px;padding:9px 2px;color:#cbd5e1}.settlement-row.total{border-top:1px solid #334155;font-weight:800}.settlement-row.grand{border-top:1px solid #475569;font-size:18px;color:#fff;font-weight:900}.settlement-warning{margin-top:10px;padding:9px 11px;border-radius:8px;background:#78350f;color:#fef3c7}.settlement-warning.good{background:#14532d;color:#dcfce7}.settlement-warning.bad{background:#7f1d1d;color:#fee2e2}
+</style><link rel="stylesheet" href="../css/seller-simple.css"><link rel="stylesheet" href="../css/seller-pro.css"><link rel="stylesheet" href="../css/seller-professional-v1-1.css">
+</head>
+<body data-seller-page="inventory">
+<div class="panel-shell">
+  <aside class="panel-sidebar"></aside>
+
+  <main class="panel-main">
+    <header class="panel-topbar">
+      <div>
+        <h1>दुकान का Inventory</h1>
+        <p id="sellerWelcome">Manage prices, discounts, stock and catalogue status.</p>
+      </div>
+      <div class="top-actions">
+        <a class="btn btn-light" href="https://desimall-customer.onrender.com/"><i class="fa-solid fa-store"></i> Customer Store</a>
+        <button class="btn btn-light" id="sellerLogout"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+        <button class="btn btn-primary" id="openProductModal"><i class="fa-solid fa-plus"></i> Add Product</button>
+      </div>
+    </header>
+
+<section class="seller-page-identity identity-stock">
+  <div class="identity-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+  <div><strong>दुकान का Inventory</strong><span>कौन-सा Products भरपूर है और किसे जल्दी मंगाना है—एक नजर में देखिए।</span></div>
+</section>
+
+    <section class="stats-grid stats-grid-compact">
+      <article class="stat-card"><div><small>Total Products</small><strong id="sellerProductCount">0</strong></div><span class="stat-icon"><i class="fa-solid fa-shirt"></i></span></article>
+      <article class="stat-card"><div><small>चालू Products</small><strong id="sellerActiveCount">0</strong></div><span class="stat-icon"><i class="fa-solid fa-circle-check"></i></span></article>
+      <article class="stat-card"><div><small>Pending Approval</small><strong id="sellerPendingCount">0</strong></div><span class="stat-icon"><i class="fa-solid fa-clock"></i></span></article>
+      <article class="stat-card"><div><small>छिपा Products</small><strong id="sellerInactiveCount">0</strong></div><span class="stat-icon"><i class="fa-solid fa-eye-slash"></i></span></article>
+      <article class="stat-card"><div><small>Total Stock</small><strong id="sellerStockCount">0</strong></div><span class="stat-icon"><i class="fa-solid fa-cubes"></i></span></article>
+      <article class="stat-card"><div><small>Low / Out</small><strong id="sellerLowStock">0</strong></div><span class="stat-icon"><i class="fa-solid fa-triangle-exclamation"></i></span></article>
+      <article class="stat-card"><div><small>Units Sold</small><strong id="sellerSoldCount">0</strong></div><span class="stat-icon"><i class="fa-solid fa-chart-line"></i></span></article>
+      <article class="stat-card"><div><small>Stock Value</small><strong id="sellerValue">₹0</strong></div><span class="stat-icon"><i class="fa-solid fa-indian-rupee-sign"></i></span></article>
+    </section>
+
+    <section class="panel-card" id="products" style="margin-top:18px">
+      <div class="card-head catalogue-head">
+        <div><h2>Inventory सूची</h2><p class="muted">Edit MRP, sale price, discount, stock and visibility.</p></div>
+        <div class="catalogue-tools">
+          <input id="sellerSearch" placeholder="Search name, SKU, category or Product ID">
+          <select id="sellerStatusFilter" aria-label="Filter by status">
+            <option value="">All statuses</option><option value="active">चालू Products</option><option value="pending">Pending Approval</option><option value="inactive">छिपा Products</option><option value="out">Out of stock</option><option value="low">Low stock</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="bulk-bar" id="bulkBar">
+        <strong><span id="selectedCount">0</span> selected</strong>
+        <select id="bulkAction">
+          <option value="">Choose bulk action</option>
+          <option value="stock-add">Add stock</option>
+          <option value="stock-set">Set stock</option>
+          <option value="discount">Set discount %</option>
+          <option value="inactive">Hide products</option>
+          <option value="active">Show products</option>
+        </select>
+        <input id="bulkValue" type="number" min="0" placeholder="Value">
+        <button class="btn btn-primary" id="applyBulk" type="button"><i class="fa-solid fa-bolt"></i> Apply</button>
+        <button class="btn btn-light" id="clearSelection" type="button">Clear</button>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data-table seller-product-table">
+          <thead><tr>
+            <th><input type="checkbox" id="selectAllProducts" aria-label="Select all products"></th>
+            <th>Product</th><th>SKU / Category</th><th>MRP / Sale</th><th>Discount</th><th>Inventory</th><th>Status</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="sellerProductBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel-card" id="inventory" style="margin-top:18px">
+      <div class="card-head"><div><h2>Inventory Summary</h2><p class="muted">Reserved and sold quantities are prepared for the Orders module.</p></div></div>
+      <div class="inventory-summary-grid">
+        <article><span>Available stock</span><strong id="inventoryAvailable">0</strong></article>
+        <article><span>Reserved stock</span><strong id="inventoryReserved">0</strong></article>
+        <article><span>Sold quantity</span><strong id="inventorySold">0</strong></article>
+        <article><span>Out of stock</span><strong id="inventoryOut">0</strong></article>
+      </div>
+    </section>
+  
+<section class="dukaan-advisor" id="dukaanAdvisor">
+  <div class="advisor-head"><div class="advisor-mark"><i class="fa-solid fa-lightbulb"></i></div><div><h2>Seller Tips</h2><p>Quick suggestions for healthier listings and inventory.</p></div></div>
+  <div class="advisor-grid" id="advisorGrid">
+    <article><i class="fa-solid fa-camera"></i><div><strong>Use clear photos</strong><span>सफेद या हल्के बैकग्राउंड वाली फोटो ज्यादा भरोसेमंद लगती है।</span></div></article>
+    <article><i class="fa-solid fa-boxes-stacked"></i><div><strong>Restock on time</strong><span>5 या उससे कम बचने पर Products दोबारा मंगाने की तैयारी रखें।</span></div></article>
+    <article><i class="fa-solid fa-indian-rupee-sign"></i><div><strong>Keep pricing accurate</strong><span>MRP, बिक्री Pricing & Settlement हमेशा जाँचें।</span></div></article>
+  </div>
+</section>
+</main>
+</div>
+
+<div class="modal" id="productModal">
+  <div class="modal-box">
+    <div class="modal-head"><h2 id="productModalTitle">Add product</h2><button class="close-btn" id="closeProductModal"><i class="fa-solid fa-xmark"></i></button></div>
+    <form id="productForm" class="form-grid">
+      <input type="hidden" id="editProductId">
+      <div class="field"><label>Product name</label><input id="pfName" required></div>
+      <div class="field"><label>Category</label><select id="pfCategory"><option>Men</option><option>Women</option><option>Kids</option><option>Footwear</option><option>Electronics</option><option>General</option></select></div>
+      <div class="field"><label>SKU</label><input id="pfSku" placeholder="Auto-generated if blank"></div>
+      <div class="field"><label>Product status</label><select id="pfStatus"><option value="">Keep current/default</option><option value="चालू Products">चालू Products</option><option value="छिपा Products">छिपा Products</option></select><small>Pending Approval products cannot be self-approved.</small></div>
+
+      <div class="field"><label>MRP (₹)</label><input id="pfMrp" type="number" min="0" step="0.01" required></div>
+      <div class="field"><label>Bank settlement target (₹)</label><input id="pfSettlement" type="number" min="1" step="0.01" required><small>Product बिकने पर प्रति यूनिट आपके bank/wallet में मिलने वाली target amount.</small></div>
+      <div class="field full settlement-calculator">
+        <div class="settlement-title"><strong><i class="fa-solid fa-calculator"></i> Settlement & listing price preview</strong><span id="pfCommissionSource">Marketplace Default</span></div>
+        <div class="settlement-row"><span>Bank settlement</span><strong id="pfSettlementOut">₹0</strong></div>
+        <div class="settlement-row"><span>DesiMall commission <small id="pfCommissionRate">(2%)</small></span><strong id="pfCommissionOut">+₹0</strong></div>
+        <div class="settlement-row"><span>Estimated fees & taxes</span><strong id="pfFeesOut">+₹0</strong></div>
+        <div class="settlement-row total"><span>Seller price</span><strong id="pfSellerPriceOut">₹0</strong></div>
+        <div class="settlement-row"><span>Customer logistics fee</span><strong id="pfLogisticsOut">+₹0</strong></div>
+        <div class="settlement-row grand"><span>Customer listing price</span><strong id="pfListingOut">₹0</strong></div>
+        <div class="settlement-warning" id="pfPricingWarning">Enter MRP and bank settlement.</div>
+        <input id="pfPrice" type="hidden">
+        <input id="pfDiscountPreview" type="hidden">
+      </div>
+      <div class="field"><label>Stock quantity</label><input id="pfStock" type="number" min="0" step="1" required></div>
+      <div class="field"><label>Reserved stock</label><input id="pfReserved" type="number" min="0" step="1" value="0" readonly></div>
+      <div class="field"><label>Sold quantity</label><input id="pfSold" type="number" min="0" step="1" value="0" readonly></div>
+      <div class="field"><label>Unit type</label><select id="pfUnit" required><option value="Piece">Piece</option><option value="Pack">Pack</option><option value="Box">Box</option><option value="Set">Set</option><option value="Dozen">Dozen</option><option value="Kg">Kg</option><option value="Gram">Gram</option><option value="Litre">Litre</option><option value="ml">ml</option><option value="Meter">Meter</option></select></div>
+      <div class="field"><label>Unit quantity / weight</label><input id="pfUnitValue" type="number" min="0" step="0.01" value="1" required></div>
+      <div class="field"><label>Unit label preview</label><input id="pfUnitPreview" readonly value="1 Piece"></div>
+      <div class="field full"><label>Product image</label><div class="upload-box"><input id="pfImageFile" type="file" accept="image/jpeg,image/png,image/webp" capture="environment"><div><i class="fa-solid fa-cloud-arrow-up"></i><strong>Camera or gallery se image choose karein</strong><small id="pfImageStatus">JPG, PNG or WEBP • Maximum 8 MB</small></div><img id="pfImagePreview" class="upload-preview" alt="Product image preview" hidden></div><input id="pfImage" type="hidden"></div>
+      <div class="field full"><label>Description</label><textarea id="pfDescription"></textarea></div>
+      <div class="field full"><button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save product</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="toast-panel" id="panelToast"></div>
+<script src="../js/api.js"></script><script src="../js/seller-pro.js"></script><script src="../js/seller-shell.js"></script><script src="../js/upload.js"></script><script src="../js/seller.js"></script><script src="../js/seller-page.js"></script><script src="../js/ui-preferences.js"></script><script src="../js/analytics.js"></script>
+<script src="../js/seller-simple.js"></script></body>
+</html>
