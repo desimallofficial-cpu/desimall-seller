@@ -157,8 +157,22 @@ const SellerAuth = {
         window.location.replace(this.destination(result.seller));
       }, 350);
     } catch (error) {
+      const rawMessage = String(error?.message || '').trim().toLowerCase();
+      const status = Number(error?.status || 0);
+
+      const invalidCredentials =
+        status === 400 ||
+        status === 401 ||
+        rawMessage.includes('invalid login credentials') ||
+        rawMessage.includes('invalid credentials') ||
+        rawMessage.includes('wrong password') ||
+        rawMessage.includes('incorrect password') ||
+        rawMessage.includes('email or password');
+
       this.message(
-        error?.message || 'Seller login nahi ho saka.'
+        invalidCredentials
+          ? 'Wrong / invalid password. Please enter a valid password.'
+          : (error?.message || 'Seller login nahi ho saka.')
       );
     } finally {
       this.busy(button, false);
