@@ -1,0 +1,7 @@
+DESIMALL SELLER TEST BUILD v0.29.5
+Source: DesiMall_CustomerPreTestCleanup_v0.29.4 FULL
+Purpose: Separate public Seller testing frontend
+Backend: Existing https://desimall-backend.onrender.com
+Database: Existing Supabase
+Customer Store: https://desimall-customer.onrender.com/
+Deployment: Static hosting only; do not replace backend repository.
