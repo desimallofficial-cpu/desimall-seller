@@ -2272,6 +2272,14 @@ const DesiMallAPI = {
     );
   },
 
+  updateSellerPickupLocation(data = {}, token = '') {
+    return this._roleRest('seller', '/api/v1/seller/pickup-location', {
+      method: 'POST',
+      data,
+      token
+    });
+  },
+
   updateSellerProfile(data) {
     return this.post(
       'updateSellerProfile',

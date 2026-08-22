@@ -37,6 +37,16 @@
           <div class="field"><label>मोबाइल</label><input id="sellerमोबाइल" readonly></div>
           <div class="field"><label>ईमेल</label><input id="sellerईमेल" type="email"></div>
           <div class="field full"><label>दुकान का पता</label><textarea id="sellerAddress" rows="4"></textarea></div>
+          <div class="field full seller-pickup-location-box">
+            <div>
+              <label>Pickup Map Location</label>
+              <p>Shop par khade hokar current location save karein. Rider ko pickup navigation isi location se milega.</p>
+              <small id="sellerPickupLocationText">Pickup GPS not saved.</small>
+            </div>
+            <button class="btn btn-light" id="saveSellerPickupLocation" type="button">
+              <i class="fa-solid fa-location-crosshairs"></i> Use Current Shop Location
+            </button>
+          </div>
 
           <div class="field"><label>दुकान का लोगो</label><label class="upload-brand-control" for="shopLogoFile"><i class="fa-solid fa-cloud-arrow-up"></i><span>लोगो चुनें</span></label><input id="shopLogoFile" type="file" accept="image/jpeg,image/png,image/webp" hidden></div>
           <div class="field"><label>दुकान का बैनर</label><label class="upload-brand-control" for="shopBannerFile"><i class="fa-solid fa-panorama"></i><span>बैनर चुनें</span></label><input id="shopBannerFile" type="file" accept="image/jpeg,image/png,image/webp" hidden></div>
@@ -76,5 +86,5 @@
     </section>
   </main>
 </div>
-<script src="../js/api.js"></script><script src="../js/seller-pro.js"></script><script src="../js/seller-shell.js"></script><script src="../js/seller-profile.js"></script><script src="../js/ui-preferences.js"></script>
+<script src="../js/api.js?v=0.29.9"></script><script src="../js/seller-pro.js"></script><script src="../js/seller-shell.js"></script><script src="../js/seller-profile.js?v=0.29.9"></script><script src="../js/ui-preferences.js"></script>
 <script src="../js/seller-simple.js"></script></body></html>
