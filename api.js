@@ -1127,6 +1127,26 @@ const DesiMallAPI = {
     }
   },
 
+  async warmBackend(timeoutMs = 15000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/health`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' },
+        cache: 'no-store',
+        signal: controller.signal
+      });
+
+      return response.ok;
+    } catch (_) {
+      return false;
+    } finally {
+      clearTimeout(timer);
+    }
+  },
+
   // =========================================================
   // SELLER — SUPABASE / RENDER API v0.7.0
   // =========================================================
@@ -1168,7 +1188,7 @@ const DesiMallAPI = {
   },
 
   getSellerOrders(token) {
-    return this._sellerRest('/api/v1/seller/orders?limit=100', {
+    return this._sellerRest('/api/v1/seller/orders?limit=50', {
       method: 'GET',
       token
     });

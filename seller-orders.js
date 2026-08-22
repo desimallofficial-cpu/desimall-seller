@@ -1,12 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => SellerOrders.init());
 
 const SellerOrders = {
-  version: '0.7.7',
+  version: '0.7.8',
   sessionKey:'desimall_seller_session',
   session:null,
   orders:[],
   activeStatus:'',
   selectedOrderId:'',
+  reconnectTimer:null,
+  reconnecting:false,
   money:n=>`₹${Number(n||0).toLocaleString('en-IN')}`,
   itemRate(i){
     const value=i?.UnitPrice??i?.Rate??i?.unit_price??i?.Price??i?.price??0;
@@ -66,13 +68,19 @@ const SellerOrders = {
   },
   async logout(){const token=this.session?.token||'';localStorage.removeItem(this.sessionKey);if(token)await DesiMallAPI.sellerLogout(token);location.replace('login.html');},
 
-  async load(){
+  async load({silent=false, retry=true}={}){
     this.session=this.readSession();
+
     const btn=document.getElementById('refreshOrders');
     const cacheKey=`desimall_seller_orders_${this.session?.seller?.SellerID||'current'}`;
-    btn.disabled=true;
-    btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> लोड हो रहा';
+
+    if(!silent){
+      btn.disabled=true;
+      btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> लोड हो रहा';
+    }
+
     let r;
+
     try{
       r=await DesiMallAPI.getSellerOrders(this.session.token);
       this.session=this.readSession();
@@ -82,43 +90,112 @@ const SellerOrders = {
         location.replace('login.html?reason=session');
         return;
       }
-      r={success:false,message:error?.message||'Network unavailable',offline:true};
+
+      // Render free/cold services can occasionally need a wake-up request.
+      if(retry){
+        await DesiMallAPI.warmBackend();
+        await new Promise(resolve=>setTimeout(resolve,700));
+
+        try{
+          r=await DesiMallAPI.getSellerOrders(this.session.token);
+          this.session=this.readSession();
+        }catch(secondError){
+          if(secondError?.status===401||secondError?.code==='SELLER_SESSION_ENDED'){
+            localStorage.removeItem(this.sessionKey);
+            location.replace('login.html?reason=session');
+            return;
+          }
+
+          r={
+            success:false,
+            message:secondError?.message||error?.message||'Network unavailable',
+            offline:true
+          };
+        }
+      }else{
+        r={
+          success:false,
+          message:error?.message||'Network unavailable',
+          offline:true
+        };
+      }
     }finally{
-      btn.disabled=false;
-      btn.innerHTML='<i class="fa-solid fa-rotate"></i> ताज़ा करें';
+      if(!silent){
+        btn.disabled=false;
+        btn.innerHTML='<i class="fa-solid fa-rotate"></i> ताज़ा करें';
+      }
     }
 
-    if(!r.success){
-      const m=String(r.message||r.error||'').toLowerCase();
+    if(!r?.success){
+      const m=String(r?.message||r?.error||'').toLowerCase();
+
       if(/invalid seller session|session expired|seller login required|account is not active|invalid or expired supabase session|seller account is required|seller account is not active/.test(m)){
         localStorage.removeItem(this.sessionKey);
         location.replace('login.html?reason=session');
         return;
       }
+
+      let hasCache=false;
+
       try{
         const cached=JSON.parse(localStorage.getItem(cacheKey)||'[]');
+
         if(Array.isArray(cached)&&cached.length){
+          hasCache=true;
           this.orders=cached;
           this.render();
-          this.toast('Live backend slow hai. Last saved orders dikh rahe hain.');
-          return;
+
+          if(!silent){
+            const reason=String(r?.message||'Backend temporarily unavailable');
+            this.toast(`Live data connect nahi hua: ${reason}. Last saved orders dikh rahe hain.`);
+          }
         }
       }catch(_){}
-      this.orders=[];
-      this.render();
-      this.toast(r.message||'Backend temporarily unavailable. Refresh karke dobara try karein.');
+
+      if(!hasCache){
+        this.orders=[];
+        this.render();
+
+        if(!silent){
+          this.toast(r?.message||'Backend temporarily unavailable. Refresh karke dobara try karein.');
+        }
+      }
+
+      // Keep trying quietly; live data replaces cache automatically when available.
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer=setTimeout(()=>{
+        this.load({silent:true,retry:true});
+      },12000);
+
       return;
     }
+
+    clearTimeout(this.reconnectTimer);
+    this.reconnectTimer=null;
 
     if(r.seller){
       this.session.seller=r.seller;
       localStorage.setItem(this.sessionKey,JSON.stringify(this.session));
-      document.getElementById('sellerWelcome').textContent=`${r.seller.ShopName||r.seller.SellerName||'Seller'} • Accept, prepare and hand orders to the assigned rider.`;
+
+      document.getElementById('sellerWelcome').textContent=
+        `${r.seller.ShopName||r.seller.SellerName||'Seller'} • Accept, prepare and hand orders to the assigned rider.`;
     }
+
     this.orders=Array.isArray(r.orders)?r.orders:[];
-    try{localStorage.setItem(cacheKey,JSON.stringify(this.orders));}catch(_){}
+
+    try{
+      localStorage.setItem(cacheKey,JSON.stringify(this.orders));
+    }catch(_){}
+
     this.render();
+
+    if(silent){
+      console.info(
+        `Seller orders refreshed live${r?.meta?.responseMs!=null?` in ${r.meta.responseMs}ms`:''}.`
+      );
+    }
   },
+
   filtered(){
     const q=document.getElementById('orderSearch').value.toLowerCase().trim();
     const status=(this.activeStatus||document.getElementById('orderStatusFilter').value).toLowerCase();
