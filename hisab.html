@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Seller Wallet & Settlement - DesiMall Seller Center</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="../css/panel.css">
+<link rel="stylesheet" href="../css/global-theme.css">
+<link rel="stylesheet" href="../css/seller.css">
+<link rel="stylesheet" href="../css/seller-pro.css">
+<link rel="stylesheet" href="../css/seller-professional-v1-1.css">
+
+<style>
+.account-kpis{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:14px;
+  margin-bottom:16px;
+}
+.account-kpi{
+  min-height:116px;
+  padding:18px;
+  background:#172231;
+  border:1px solid #2b3b50;
+  border-radius:12px;
+}
+.account-kpi .kpi-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.account-kpi small{
+  color:#93a4b8;
+  font-size:12px;
+  font-weight:650;
+}
+.account-kpi i{
+  color:#ff7b1a;
+}
+.account-kpi strong{
+  display:block;
+  margin-top:14px;
+  font-size:28px;
+  line-height:1;
+}
+.account-kpi span{
+  display:block;
+  margin-top:8px;
+  color:#7f91a6;
+  font-size:11px;
+}
+.account-kpi.primary{
+  border-color:#a84b14;
+  background:linear-gradient(145deg,#1b2a3c,#2b241f);
+}
+.account-strip{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  padding:14px;
+  margin-bottom:16px;
+  border:1px solid #2b3b50;
+  border-radius:12px;
+  background:#121c29;
+}
+.account-strip div{
+  padding:5px 10px;
+  border-right:1px solid #2b3b50;
+}
+.account-strip div:last-child{border-right:0}
+.account-strip small{
+  display:block;
+  color:#7f91a6;
+  font-size:10px;
+  margin-bottom:5px;
+}
+.account-strip strong{
+  font-size:13px;
+}
+.account-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.45fr) minmax(330px,.75fr);
+  gap:14px;
+  align-items:start;
+}
+.account-panel{
+  background:#172231;
+  border:1px solid #2b3b50;
+  border-radius:12px;
+  overflow:hidden;
+}
+.account-panel-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  min-height:64px;
+  padding:14px 16px;
+  border-bottom:1px solid #2b3b50;
+}
+.account-panel-head h2{
+  margin:0;
+  font-size:17px;
+}
+.account-panel-head p{
+  margin:4px 0 0;
+  color:#93a4b8;
+  font-size:11px;
+}
+.account-table{
+  width:100%;
+  border-collapse:collapse;
+}
+.account-table th,
+.account-table td{
+  padding:12px 14px;
+  text-align:left;
+  border-bottom:1px solid #26364a;
+  vertical-align:middle;
+}
+.account-table th{
+  color:#8fa1b7;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.6px;
+}
+.account-table td{
+  font-size:12px;
+}
+.account-table .positive{color:#5bdf8c;font-weight:800}
+.account-table .negative{color:#ff9c7b;font-weight:800}
+.account-table .hold{color:#ffc45a;font-weight:800}
+.account-table .paid{color:#8ed1ff;font-weight:800}
+.account-empty{
+  padding:46px 18px!important;
+  text-align:center!important;
+  color:#93a4b8;
+}
+.payout-list{
+  display:flex;
+  flex-direction:column;
+}
+.payout-item{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:12px;
+  padding:14px 16px;
+  border-bottom:1px solid #26364a;
+}
+.payout-item:last-child{border-bottom:0}
+.payout-item strong{font-size:13px}
+.payout-item span{
+  display:block;
+  margin-top:4px;
+  color:#93a4b8;
+  font-size:11px;
+}
+.payout-item .amount{
+  text-align:right;
+  font-size:14px;
+  font-weight:800;
+  color:#5bdf8c;
+}
+.account-note{
+  padding:14px 16px;
+  margin-top:14px;
+  border:1px solid #2d4f3a;
+  background:#14251c;
+  color:#b8d9c3;
+  border-radius:10px;
+  font-size:12px;
+  line-height:1.55;
+}
+@media(max-width:1050px){
+  .account-kpis{grid-template-columns:repeat(2,1fr)}
+  .account-strip{grid-template-columns:repeat(2,1fr)}
+  .account-grid{grid-template-columns:1fr}
+}
+@media(max-width:620px){
+  .account-kpis{grid-template-columns:1fr}
+  .account-strip{grid-template-columns:1fr}
+  .account-strip div{border-right:0;border-bottom:1px solid #2b3b50}
+  .account-strip div:last-child{border-bottom:0}
+}
+</style>
+</head>
+
+<body>
+<div class="panel-shell">
+  <aside class="panel-sidebar"></aside>
+
+  <main class="panel-main">
+    <header class="panel-topbar">
+      <div>
+        <h1>Seller Wallet & Settlement</h1>
+        <p>One clear ledger for earnings, COD holds, returns, payable balance and completed payouts.</p>
+      </div>
+
+      <button class="btn secondary" id="refreshHisab">
+        <i class="fa-solid fa-rotate"></i>
+        Refresh
+      </button>
+    </header>
+
+    <section class="account-kpis">
+      <article class="account-kpi primary">
+        <div class="kpi-top">
+          <small>Available for Payout</small>
+          <i class="fa-solid fa-wallet"></i>
+        </div>
+        <strong id="sellerPendingPayout">₹0</strong>
+        <span>Current seller balance ready for settlement</span>
+      </article>
+
+      <article class="account-kpi">
+        <div class="kpi-top">
+          <small>Net Seller Earnings</small>
+          <i class="fa-solid fa-chart-line"></i>
+        </div>
+        <strong id="sellerTotalEarning">₹0</strong>
+        <span>Eligible sales after return adjustments</span>
+      </article>
+
+      <article class="account-kpi">
+        <div class="kpi-top">
+          <small>Total Paid</small>
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <strong id="sellerPaidPayout">₹0</strong>
+        <span>Payouts already recorded</span>
+      </article>
+
+      <article class="account-kpi">
+        <div class="kpi-top">
+          <small>COD On Hold</small>
+          <i class="fa-solid fa-hourglass-half"></i>
+        </div>
+        <strong id="sellerCODHold">₹0</strong>
+        <span>Released after rider COD deposit</span>
+      </article>
+    </section>
+
+    <section class="account-strip">
+      <div>
+        <small>Eligible Sales</small>
+        <strong id="sellerEligibleSales">₹0</strong>
+      </div>
+      <div>
+        <small>Return Adjustments</small>
+        <strong id="sellerReturnAdjustments">₹0</strong>
+      </div>
+      <div>
+        <small>Marketplace Fees</small>
+        <strong id="sellerMarketplaceFees">₹0</strong>
+      </div>
+      <div>
+        <small>Eligible Orders</small>
+        <strong id="sellerPaidOrders">0</strong>
+      </div>
+    </section>
+
+    <section class="account-panel" style="margin-bottom:16px">
+      <div class="account-panel-head">
+        <div>
+          <h2>Wallet Balance Breakdown</h2>
+          <p>Eligible earnings − returns − payouts = current payable balance.</p>
+        </div>
+      </div>
+      <div class="account-strip" style="margin:0;border:0;border-radius:0;background:transparent;grid-template-columns:repeat(5,minmax(0,1fr))">
+        <div><small>Historical Delivered Gross</small><strong id="sellerDeliveredGross">₹0</strong></div>
+        <div><small>Payment Pending</small><strong id="sellerPaymentPending">₹0</strong></div>
+        <div><small>COD Hold Orders</small><strong id="sellerCODHoldOrders">0</strong></div>
+        <div><small>COD Review / Blocked</small><strong id="sellerCODReview">₹0</strong><span id="sellerCODReviewOrders" style="display:block;margin-top:4px;font-size:11px;color:#9fb0c4">0 orders</span></div>
+        <div><small>Recovery / Adjustment Due</small><strong id="sellerRecoveryDue">₹0</strong></div>
+      </div>
+      <div id="sellerRecoveryAlert" class="account-note" style="display:none;margin:0 14px 14px;border-color:#70402f;background:#2a1b17;color:#ffc2ad"></div>
+      <div id="sellerCODReviewAlert" class="account-note" style="display:none;margin:0 14px 14px;border-color:#6a5425;background:#272115;color:#ffe0৮০"></div>
+    </section>
+<section class="account-grid">
+      <article class="account-panel">
+        <div class="account-panel-head">
+          <div>
+            <h2>Account Activity</h2>
+            <p>Every balance-changing event stays visible here for audit and dispute checking.</p>
+          </div>
+        </div>
+
+        <div style="overflow:auto">
+          <table class="account-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Activity</th>
+                <th>Order / Reference</th>
+                <th>Status</th>
+                <th>Fee</th>
+                <th>Seller Amount</th>
+              </tr>
+            </thead>
+            <tbody id="sellerHisabBody">
+              <tr>
+                <td colspan="6" class="account-empty">Loading account activity…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+      <article class="account-panel">
+        <div class="account-panel-head">
+          <div>
+            <h2>Payout History</h2>
+            <p>Completed seller payments and transaction references.</p>
+          </div>
+        </div>
+
+        <div id="sellerPayoutHistory" class="payout-list">
+          <div class="account-empty">No payout history yet.</div>
+        </div>
+      </article>
+    </section>
+
+    <div class="account-note">
+      <strong>How payout works:</strong>
+      Prepaid orders become eligible after successful payment confirmation. COD orders become eligible after rider cash is fully reconciled. "COD On Hold" contains only COD cash actually recorded with a rider. Older delivered COD records with no collection evidence are kept blocked and shown separately as "COD Review" so they cannot inflate live cash-hold figures or accidentally become payable.
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="sellerHisabToast"></div>
+
+<script src="../js/api.js?v=0.29.3"></script>
+<script src="../js/seller-hisab.js?v=0.29.3"></script>
+<script src="../js/seller-pro.js"></script>
+<script src="../js/seller-shell.js"></script>
+<script src="../js/seller-simple.js"></script>
+</body>
+</html>

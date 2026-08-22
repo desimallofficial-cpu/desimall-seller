@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Returns - DesiMall Seller Center</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="../css/panel.css">
+  <link rel="stylesheet" href="../css/global-theme.css">
+  <link rel="stylesheet" href="../css/seller.css">
+  <link rel="stylesheet" href="../css/returns.css">
+  <link rel="stylesheet" href="../css/seller-simple.css">
+  <link rel="stylesheet" href="../css/seller-pro.css">
+  <link rel="stylesheet" href="../css/seller-professional-v1-1.css">
+
+  <style>
+    .seller-return-kpis{
+      display:grid;
+      grid-template-columns:repeat(5,minmax(0,1fr));
+      gap:12px;
+      margin-bottom:16px;
+    }
+    .seller-return-kpi{
+      min-height:92px;
+      padding:16px;
+      border:1px solid #2b3b50;
+      border-radius:12px;
+      background:#172231;
+    }
+    .seller-return-kpi small{
+      display:block;
+      color:#93a4b8;
+      font-size:11px;
+      font-weight:650;
+      margin-bottom:10px;
+    }
+    .seller-return-kpi strong{font-size:26px}
+    .seller-return-workspace{
+      display:grid;
+      grid-template-columns:minmax(360px,.85fr) minmax(0,1.55fr);
+      gap:14px;
+      align-items:start;
+    }
+    .seller-return-panel{
+      border:1px solid #2b3b50;
+      border-radius:12px;
+      background:#172231;
+      overflow:hidden;
+    }
+    .seller-return-toolbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      min-height:64px;
+      padding:14px 16px;
+      border-bottom:1px solid #2b3b50;
+    }
+    .seller-return-toolbar h2{
+      margin:0;
+      font-size:17px;
+    }
+    .seller-return-toolbar select{
+      min-width:155px;
+      height:38px;
+      border:1px solid #35485f;
+      border-radius:9px;
+      background:#101925;
+      color:#fff;
+      padding:0 10px;
+    }
+    .seller-return-list{
+      display:flex;
+      flex-direction:column;
+    }
+    .seller-return-row{
+      width:100%;
+      display:grid;
+      grid-template-columns:minmax(0,1.25fr) minmax(110px,.75fr) auto;
+      gap:10px;
+      align-items:center;
+      padding:14px 16px;
+      border:0;
+      border-bottom:1px solid #26364a;
+      background:transparent;
+      color:#fff;
+      text-align:left;
+      cursor:pointer;
+    }
+    .seller-return-row:hover,
+    .seller-return-row.active{background:#1e2d40}
+    .seller-return-row-main strong{display:block;font-size:13px}
+    .seller-return-row-main span,
+    .seller-return-row-reason{
+      display:block;
+      margin-top:3px;
+      color:#93a4b8;
+      font-size:11px;
+      overflow:hidden;
+      white-space:nowrap;
+      text-overflow:ellipsis;
+    }
+    .seller-return-detail{
+      min-height:360px;
+      padding:20px;
+    }
+    .seller-return-detail-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:16px;
+      padding-bottom:18px;
+      border-bottom:1px solid #2b3b50;
+    }
+    .seller-return-detail-head h2{margin:5px 0 4px;font-size:22px}
+    .seller-return-detail-head p{margin:0;color:#93a4b8;font-size:12px}
+    .seller-eyebrow{
+      font-size:10px;
+      font-weight:800;
+      letter-spacing:.8px;
+      text-transform:uppercase;
+      color:#ff9b54;
+    }
+    .seller-return-detail-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:16px;
+    }
+    .seller-return-detail-grid>div{
+      padding:14px;
+      border:1px solid #2b3b50;
+      border-radius:10px;
+      background:#121d2b;
+    }
+    .seller-return-detail-grid .wide{grid-column:1/-1}
+    .seller-return-detail-grid small,
+    .seller-return-detail-grid span{
+      display:block;
+      color:#93a4b8;
+      font-size:11px;
+    }
+    .seller-return-detail-grid strong{
+      display:block;
+      margin:5px 0;
+      font-size:13px;
+      line-height:1.45;
+    }
+    .seller-return-proof{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-top:14px;
+      color:#ff9b54;
+      font-size:12px;
+      font-weight:700;
+      text-decoration:none;
+    }
+    .seller-return-messages{
+      margin-top:16px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .seller-return-message{
+      max-width:85%;
+      padding:10px 12px;
+      border-radius:10px;
+      background:#1d2d40;
+    }
+    .seller-return-message.seller{
+      margin-left:auto;
+      background:#263a2e;
+    }
+    .seller-return-message strong{font-size:11px}
+    .seller-return-message p{margin:4px 0 0;color:#b7c4d3;font-size:12px}
+    .return-actions{
+      display:flex;
+      gap:8px;
+      margin-top:18px;
+      padding-top:16px;
+      border-top:1px solid #2b3b50;
+    }
+    .seller-return-empty{
+      min-height:230px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:7px;
+      color:#93a4b8;
+      text-align:center;
+    }
+    .seller-return-empty i{font-size:24px;color:#ff6b00}
+    .seller-return-empty strong{color:#fff}
+    .seller-return-empty span{font-size:12px}
+    @media(max-width:1100px){
+      .seller-return-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+      .seller-return-workspace{grid-template-columns:1fr}
+    }
+    @media(max-width:650px){
+      .seller-return-kpis{grid-template-columns:1fr 1fr}
+      .seller-return-detail-grid{grid-template-columns:1fr}
+      .seller-return-detail-grid .wide{grid-column:auto}
+    }
+  </style>
+</head>
+
+<body>
+<div class="panel-shell">
+  <aside class="panel-sidebar"></aside>
+
+  <main class="panel-main">
+    <header class="panel-topbar">
+      <div>
+        <h1>Returns</h1>
+        <p>Review customer return requests and follow each item through pickup, inspection and completion.</p>
+      </div>
+
+      <button class="btn btn-primary" id="refreshSellerReturns">
+        <i class="fa-solid fa-rotate"></i>
+        Refresh
+      </button>
+    </header>
+
+    <section class="seller-return-kpis">
+      <article class="seller-return-kpi">
+        <small>Total Returns</small>
+        <strong id="srTotal">0</strong>
+      </article>
+      <article class="seller-return-kpi">
+        <small>Action Needed</small>
+        <strong id="srPending">0</strong>
+      </article>
+      <article class="seller-return-kpi">
+        <small>Approved</small>
+        <strong id="srAccepted">0</strong>
+      </article>
+      <article class="seller-return-kpi">
+        <small>Pickup / Received</small>
+        <strong id="srPickup">0</strong>
+      </article>
+      <article class="seller-return-kpi">
+        <small>Completed Returns</small>
+        <strong id="srRefunded">0</strong>
+      </article>
+    </section>
+
+    <section class="seller-return-workspace">
+      <article class="seller-return-panel">
+        <div class="seller-return-toolbar">
+          <h2>Return Requests</h2>
+
+          <select id="sellerReturnFilter">
+            <option value="">All Statuses</option>
+            <option>Requested</option>
+            <option>Seller Accepted</option>
+            <option>Seller Rejected</option>
+            <option>Approved</option>
+            <option>Pickup Assigned</option>
+            <option>Rider Accepted</option>
+            <option>Picked Up</option>
+            <option>Received</option>
+            <option>Inspection Passed</option>
+            <option>Inspection Failed</option>
+            <option value="__return_closing__">Return Closing</option>
+            <option value="__return_completed__">Return Completed</option>
+          </select>
+        </div>
+
+        <div id="sellerReturnList" class="seller-return-list"></div>
+      </article>
+
+      <article id="sellerReturnDetail" class="seller-return-panel seller-return-detail">
+        <div class="seller-return-empty">
+          <i class="fa-solid fa-rotate-left"></i>
+          <strong>Return details</strong>
+          <span>Select a return to view its details.</span>
+        </div>
+      </article>
+    </section>
+  </main>
+</div>
+
+<div class="toast-panel" id="panelToast"></div>
+
+<script src="../js/api.js"></script>
+<script src="../js/seller-pro.js"></script>
+<script src="../js/seller-shell.js"></script>
+<script src="../js/seller-returns.js"></script>
+
+</body>
+</html>

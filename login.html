@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Seller Login - DesiMall</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="../css/panel.css">
+  <style>
+    body{min-height:100vh;display:grid;place-items:center;padding:24px;background:linear-gradient(135deg,#101827,#243148)}
+    .auth-card{width:min(480px,100%);background:#fff;border-radius:20px;padding:28px;box-shadow:0 24px 60px rgba(0,0,0,.28)}
+    .auth-brand{display:flex;align-items:center;gap:10px;color:#172033;text-decoration:none;font-size:25px;font-weight:800;margin-bottom:18px}.auth-brand i,.auth-brand span{color:#ff6b00}
+    .auth-card h1{margin:0 0 6px}.auth-card>p{margin:0 0 22px;color:#687386}.auth-tabs{display:flex;background:#f1f3f6;border-radius:11px;padding:4px;margin-bottom:20px}.auth-tabs button{flex:1;border:0;padding:10px;border-radius:8px;font-weight:800;cursor:pointer;background:transparent}.auth-tabs button.active{background:#fff;color:#ff6b00;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+    .auth-form{display:grid;gap:14px}.auth-form.hidden{display:none}.auth-form label{font-size:13px;font-weight:800;color:#172033}.auth-form input,.auth-form textarea{width:100%;padding:12px;border:1px solid #dbe0e8;border-radius:10px;font:inherit;color:#172033;background:#fff}.auth-form textarea{min-height:75px;resize:vertical}.auth-form input:focus,.auth-form textarea:focus{outline:none;border-color:#ff6b00;box-shadow:0 0 0 3px rgba(255,107,0,.14)}
+    .auth-message{min-height:20px;font-size:13px;font-weight:700;color:#c62828}.auth-message.good{color:#14804a}.auth-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:18px;font-size:13px}.auth-footer a{color:#ff6b00;text-decoration:none;font-weight:700}
+  </style>
+<link rel="stylesheet" href="../css/seller-pro.css"><link rel="stylesheet" href="../css/seller-professional-v1-1.css">
+
+<style id="seller-login-v0296-lock">
+  /* DesiMall Seller Login v0.29.6 — fixed professional dark split layout */
+  html, body { margin:0 !important; min-height:100% !important; background:#0b1017 !important; color:#fff !important; }
+  body.seller-pro-login{
+    min-height:100vh !important;
+    display:grid !important;
+    grid-template-columns:minmax(320px,.85fr) minmax(440px,1.15fr) !important;
+    place-items:stretch !important;
+    padding:0 !important;
+    background:#0b1017 !important;
+    overflow-x:hidden !important;
+  }
+  body.seller-pro-login .seller-login-visual{
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:space-between !important;
+    min-height:100vh !important;
+    padding:44px !important;
+    box-sizing:border-box !important;
+    position:relative !important;
+    overflow:hidden !important;
+    background:linear-gradient(145deg,#0e1722,#152337) !important;
+    border-right:1px solid #24344a !important;
+    opacity:1 !important;
+    filter:none !important;
+  }
+  body.seller-pro-login .seller-login-visual:after{
+    content:"" !important;
+    position:absolute !important;
+    width:380px !important;
+    height:380px !important;
+    border-radius:50% !important;
+    right:-170px !important;
+    bottom:-170px !important;
+    background:rgba(255,107,0,.10) !important;
+    pointer-events:none !important;
+  }
+  body.seller-pro-login .seller-login-visual .login-brand{
+    position:relative !important;
+    z-index:1 !important;
+    font-size:25px !important;
+    font-weight:850 !important;
+    color:#fff !important;
+  }
+  body.seller-pro-login .seller-login-visual .login-brand span{color:#ff6b00 !important}
+  body.seller-pro-login .seller-login-copy{position:relative !important;z-index:1 !important;max-width:560px !important}
+  body.seller-pro-login .seller-login-copy small{
+    color:#ff7a1a !important;
+    font-size:12px !important;
+    font-weight:900 !important;
+    text-transform:uppercase !important;
+    letter-spacing:.04em !important;
+  }
+  body.seller-pro-login .seller-login-copy h2{
+    margin:18px 0 16px !important;
+    color:#fff !important;
+    font-size:52px !important;
+    line-height:1.12 !important;
+    letter-spacing:-.045em !important;
+    font-weight:900 !important;
+  }
+  body.seller-pro-login .seller-login-copy p{
+    color:#9bb0c8 !important;
+    font-size:15px !important;
+    line-height:1.65 !important;
+    max-width:560px !important;
+  }
+  body.seller-pro-login .seller-login-points{display:grid !important;gap:12px !important;margin-top:26px !important}
+  body.seller-pro-login .seller-login-points span{color:#c7d4e4 !important;font-size:13px !important}
+  body.seller-pro-login .seller-login-points i{color:#4bd6a0 !important;margin-right:10px !important}
+  body.seller-pro-login .seller-login-form-zone{
+    display:grid !important;
+    place-items:center !important;
+    min-height:100vh !important;
+    padding:34px !important;
+    box-sizing:border-box !important;
+    background:#0b1017 !important;
+    opacity:1 !important;
+    filter:none !important;
+  }
+  body.seller-pro-login .auth-card{
+    width:min(460px,100%) !important;
+    padding:0 !important;
+    margin:0 !important;
+    border:0 !important;
+    border-radius:0 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    color:#fff !important;
+    opacity:1 !important;
+    filter:none !important;
+    transform:none !important;
+  }
+  body.seller-pro-login .auth-brand{display:none !important}
+  body.seller-pro-login .auth-card h1{
+    margin:0 0 7px !important;
+    color:#fff !important;
+    font-size:30px !important;
+    line-height:1.15 !important;
+    letter-spacing:-.035em !important;
+  }
+  body.seller-pro-login .auth-card>p{
+    margin:0 0 22px !important;
+    color:#93a4ba !important;
+    font-size:13px !important;
+  }
+  body.seller-pro-login .auth-tabs{
+    display:flex !important;
+    padding:3px !important;
+    margin-bottom:22px !important;
+    background:#111b27 !important;
+    border:1px solid #28384d !important;
+    border-radius:10px !important;
+  }
+  body.seller-pro-login .auth-tabs button{
+    flex:1 !important;
+    border:0 !important;
+    padding:11px !important;
+    border-radius:8px !important;
+    background:transparent !important;
+    color:#8fa0b5 !important;
+    font-weight:800 !important;
+  }
+  body.seller-pro-login .auth-tabs button.active{
+    background:#1b293b !important;
+    color:#fff !important;
+    box-shadow:none !important;
+  }
+  body.seller-pro-login .auth-form{display:grid !important;gap:14px !important}
+  body.seller-pro-login .auth-form.hidden{display:none !important}
+  body.seller-pro-login .auth-form label{
+    display:block !important;
+    margin-bottom:6px !important;
+    color:#b8c5d5 !important;
+    font-size:11px !important;
+    font-weight:800 !important;
+  }
+  body.seller-pro-login .auth-form input,
+  body.seller-pro-login .auth-form textarea{
+    width:100% !important;
+    box-sizing:border-box !important;
+    padding:12px !important;
+    border:1px solid #304158 !important;
+    border-radius:9px !important;
+    background:#101923 !important;
+    color:#fff !important;
+    font:inherit !important;
+    -webkit-text-fill-color:#fff !important;
+  }
+  body.seller-pro-login .auth-form input:focus,
+  body.seller-pro-login .auth-form textarea:focus{
+    outline:none !important;
+    border-color:#ff6b00 !important;
+    box-shadow:0 0 0 3px rgba(255,107,0,.14) !important;
+  }
+  body.seller-pro-login .auth-form .btn.btn-primary{
+    width:100% !important;
+    min-height:44px !important;
+    border:0 !important;
+    border-radius:9px !important;
+    background:#ff6b00 !important;
+    color:#fff !important;
+    font-weight:800 !important;
+  }
+  body.seller-pro-login .auth-message{min-height:20px !important;color:#ff8d8d !important;font-size:13px !important;font-weight:700 !important}
+  body.seller-pro-login .auth-message.good{color:#4bd6a0 !important}
+  body.seller-pro-login .auth-footer{
+    display:flex !important;
+    justify-content:space-between !important;
+    align-items:center !important;
+    gap:12px !important;
+    margin-top:18px !important;
+    color:#7f91a9 !important;
+    font-size:13px !important;
+  }
+  body.seller-pro-login .auth-footer a{color:#ff8b3b !important;text-decoration:none !important;font-weight:700 !important}
+
+  @media (max-width:850px){
+    body.seller-pro-login{grid-template-columns:1fr !important}
+    body.seller-pro-login .seller-login-visual{
+      min-height:auto !important;
+      padding:26px 24px !important;
+    }
+    body.seller-pro-login .seller-login-copy{display:none !important}
+    body.seller-pro-login .seller-login-visual>small{display:none !important}
+    body.seller-pro-login .seller-login-form-zone{
+      min-height:calc(100vh - 82px) !important;
+      padding:32px 20px !important;
+    }
+  }
+</style>
+
+</head>
+<script>
+try {
+  document.documentElement.removeAttribute("data-theme");
+  document.documentElement.style.colorScheme = "dark";
+} catch (e) {}
+</script>
+
+<body class="seller-pro-login">
+<section class="seller-login-visual"><div class="login-brand">Desi<span>Mall</span> Seller</div><div class="seller-login-copy"><small>Seller Center</small><h2>Your store operations, in one focused workspace.</h2><p>Manage products, stock, orders, returns and payouts with a cleaner seller experience built for daily work.</p><div class="seller-login-points"><span><i class="fa-solid fa-circle-check"></i> Focused order operations</span><span><i class="fa-solid fa-circle-check"></i> Clear inventory workflow</span><span><i class="fa-solid fa-circle-check"></i> Returns and payout visibility</span></div></div><small style="color:#6f8199">DesiMall Seller Center</small></section><main class="seller-login-form-zone">
+  <section class="auth-card">
+    <a class="auth-brand" href="https://desimall-customer.onrender.com/"><i class="fa-solid fa-store"></i>Desi<span>Mall</span></a>
+    <h1>Seller Account</h1>
+    <p>Login to manage only your own products and inventory.</p>
+
+    <div class="auth-tabs">
+      <button id="loginTab" class="active" type="button">Login</button>
+      <button id="registerTab" type="button">Register</button>
+    </div>
+
+    <form id="sellerLoginForm" class="auth-form">
+      <div><label>Mobile number or email</label><input id="sellerIdentifier" autocomplete="username" required></div>
+      <div><label>Password</label><input id="sellerPassword" type="password" autocomplete="current-password" required></div>
+      <button class="btn btn-primary" type="submit"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+    </form>
+
+    <form id="sellerRegisterForm" class="auth-form hidden">
+      <div><label>Shop name</label><input id="regShopName" required></div>
+      <div><label>Seller name</label><input id="regSellerName" required></div>
+      <div><label>10-digit mobile number</label><input id="regMobile" inputmode="numeric" maxlength="10" required></div>
+      <div><label>Email address</label><input id="regEmail" type="email"></div>
+      <div><label>Address</label><textarea id="regAddress"></textarea></div>
+      <div><label>Password (minimum 6 characters)</label><input id="regPassword" type="password" minlength="6" required></div>
+      <button class="btn btn-primary" type="submit"><i class="fa-solid fa-user-plus"></i> Register seller</button>
+    </form>
+
+    <div id="sellerAuthMessage" class="auth-message"></div>
+    <div class="auth-footer"><a href="https://desimall-customer.onrender.com/"><i class="fa-solid fa-arrow-left"></i> Storefront</a><span>Admin approval is required for new sellers.</span></div>
+  </section>
+  <script src="../js/api.js"></script>
+  <script src="../js/seller-auth.js"></script>
+</main></body>
+</html>
