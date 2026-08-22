@@ -37,3 +37,7 @@
 .empty-panel{padding:40px!important;text-align:center!important;background:#15271c;border:1px dashed #4e6a56;border-radius:15px;color:var(--dm-muted)}
 .empty-panel i{font-size:35px;color:var(--dm-orange);display:block;margin-bottom:10px}
 @media(max-width:900px){.advisor-grid{grid-template-columns:1fr}.seller-page-identity{align-items:flex-start}}
+
+.seller-pickup-location-box{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:14px;border:1px solid #334155;border-radius:12px;background:#111827}
+.seller-pickup-location-box p{margin:5px 0;color:#94a3b8}.seller-pickup-location-box small{color:#86efac;font-weight:700}.seller-pickup-location-box button{cursor:pointer}
+@media(max-width:700px){.seller-pickup-location-box{align-items:stretch;flex-direction:column}}
