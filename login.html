@@ -208,6 +208,18 @@
   }
 </style>
 
+
+<style id="seller-gps-v0321">
+.seller-gps-box{display:grid;gap:9px;padding:13px;border:1px solid #304158;border-radius:11px;background:#0d1722}
+.seller-gps-copy strong{display:block;color:#fff;font-size:12px}
+.seller-gps-copy strong span{color:#ff7a1a}
+.seller-gps-copy small{display:block;margin-top:4px;color:#8fa0b5;font-size:10px;line-height:1.45}
+.seller-gps-btn{min-height:42px;border:1px solid #ff6b00!important;background:rgba(255,107,0,.12)!important;color:#ff8a32!important;font-weight:850!important;cursor:pointer!important}
+.seller-gps-status{padding:8px 10px;border-radius:8px;background:#111f2d;color:#9fb0c7;font-size:10px;font-weight:800}
+.seller-gps-status.good{background:rgba(16,185,129,.12);color:#4bd6a0;border:1px solid rgba(16,185,129,.3)}
+.seller-gps-status.bad{background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.25)}
+</style>
+
 </head>
 <script>
 try {
@@ -239,7 +251,22 @@ try {
       <div><label>Seller name</label><input id="regSellerName" required></div>
       <div><label>10-digit mobile number</label><input id="regMobile" inputmode="numeric" maxlength="10" required></div>
       <div><label>Email address</label><input id="regEmail" type="email"></div>
-      <div><label>Address</label><textarea id="regAddress"></textarea></div>
+      <div><label>Pickup / Shop Address</label><textarea id="regAddress" required placeholder="Enter exact shop/pickup address"></textarea></div>
+
+      <div class="seller-gps-box">
+        <div class="seller-gps-copy">
+          <strong><i class="fa-solid fa-location-crosshairs"></i> Exact Shop Location <span>*Required</span></strong>
+          <small>Registration tab tak complete nahi hoga jab tak precise latitude-longitude capture na ho.</small>
+        </div>
+        <button id="btnCaptureSellerGps" class="btn seller-gps-btn" type="button">
+          <i class="fa-solid fa-location-dot"></i> Use Current Location
+        </button>
+        <div id="sellerGpsStatus" class="seller-gps-status">Location not captured</div>
+        <input id="regLatitude" type="hidden">
+        <input id="regLongitude" type="hidden">
+        <input id="regGpsAccuracy" type="hidden">
+      </div>
+
       <div><label>Password (minimum 6 characters)</label><input id="regPassword" type="password" minlength="6" required></div>
       <button class="btn btn-primary" type="submit"><i class="fa-solid fa-user-plus"></i> Register seller</button>
     </form>
@@ -247,7 +274,7 @@ try {
     <div id="sellerAuthMessage" class="auth-message"></div>
     <div class="auth-footer"><a href="https://desimall-customer.onrender.com/"><i class="fa-solid fa-arrow-left"></i> Storefront</a><span>Admin approval is required for new sellers.</span></div>
   </section>
-  <script src="../js/api.js"></script>
-  <script src="../js/seller-auth.js"></script>
+  <script src="../js/api.js?v=0.32.1"></script>
+  <script src="../js/seller-auth.js?v=0.32.1"></script>
 </main></body>
 </html>
