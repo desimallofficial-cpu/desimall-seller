@@ -14,3 +14,12 @@
 .team-list{display:grid;gap:6px;margin-top:9px}.team-row{border:1px solid #334155;border-radius:9px;padding:9px;display:flex;justify-content:space-between;font-size:9px}.team-add{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:7px;margin-top:10px}.team-add input{border:1px solid #334155;background:#0d1725;color:#fff;border-radius:8px;padding:8px;font-size:9px}
 @media(max-width:1000px){.svc-grid{grid-template-columns:1fr}.svc-kpis{grid-template-columns:1fr 1fr}.booking-board{grid-template-columns:1fr}.svc-packages{grid-template-columns:1fr}}
 @media(max-width:680px){.svc-form-row,.svc-form-row.three,.custom-vertical-row,.team-add{grid-template-columns:1fr}.vertical-grid{grid-template-columns:1fr 1fr}.svc-kpis{grid-template-columns:1fr 1fr}.hours-row{grid-template-columns:70px 60px 1fr 1fr}.svc-toolbar{align-items:stretch;flex-direction:column}.svc-toolbar .tools{flex-direction:column}.svc-toolbar input{min-width:0}.booking-detail-grid{grid-template-columns:1fr}}
+
+/* v0.35.3 service catalog image upload */
+.svc-upload-help{display:block;color:#7f91a8;font-size:8px;line-height:1.45;margin-top:2px}
+.svc-image-preview-wrap{display:flex;align-items:center;gap:12px;border:1px dashed #3a4c62;background:#0b1421;border-radius:11px;padding:10px;min-height:78px}
+.svc-image-preview{display:none;width:92px;height:70px;object-fit:cover;border-radius:9px;border:1px solid #334155;background:#17263a}
+.svc-image-preview.show{display:block}
+.svc-image-preview-wrap span{font-size:9px;color:#94a3b8;overflow-wrap:anywhere}
+#pkgImageFile{padding:7px 9px}
+#pkgImageFile::file-selector-button{border:0;border-radius:7px;background:#22344d;color:#fff;padding:7px 10px;margin-right:8px;cursor:pointer}
