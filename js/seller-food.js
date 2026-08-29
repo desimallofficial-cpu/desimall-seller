@@ -1,6 +1,7 @@
 
 const SellerFood = {
   session:null, restaurant:null, items:[], selectedFile:null,
+  marketplaceSettings:null,
 
   esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));},
   money(v){return `₹${Number(v||0).toLocaleString('en-IN',{maximumFractionDigits:2})}`;},
@@ -17,8 +18,62 @@ const SellerFood = {
     document.getElementById('foodMenuSearch').oninput=()=>this.render();
     document.getElementById('foodTypeFilter').onchange=()=>this.render();
     document.getElementById('fiImageFile').onchange=e=>this.pickImage(e.target.files?.[0]);
+    document.getElementById('fiSettlement').oninput=()=>this.updatePricing();
+    document.getElementById('fiMRP').oninput=()=>this.updatePricing();
 
+    await this.loadMarketplaceSettings();
     await this.load();
+  },
+
+  async loadMarketplaceSettings(){
+    try{
+      const result=await DesiMallAPI.getMarketplaceSettings(this.session.token);
+      this.marketplaceSettings=result?.success
+        ? (result.settings||{})
+        : {};
+    }catch(_){
+      this.marketplaceSettings={};
+    }
+  },
+
+  calculatePricing(settlement){
+    const settings=this.marketplaceSettings||{};
+    const amount=Math.max(0,Number(settlement||0));
+    const rate=Number(settings.DefaultCommissionPercent ?? 2);
+    const feePercent=Number(settings.ProcessingFeePercent ?? 1);
+    const feeFixed=Number(settings.ProcessingFeeFixed ?? 2);
+
+    const commission=Math.round(amount*rate)/100;
+    const fees=amount>0
+      ? Math.round((amount*feePercent/100+feeFixed)*100)/100
+      : 0;
+    const selling=Math.round((amount+commission+fees)*100)/100;
+
+    return {settlement:amount,rate,commission,fees,selling};
+  },
+
+  updatePricing(){
+    const mrp=Number(fiMRP.value||0);
+    const p=this.calculatePricing(fiSettlement.value);
+
+    fiPrice.value=p.selling>0?p.selling.toFixed(2):'';
+    foodSettlementPreview.textContent=this.money(p.settlement);
+    foodCommissionRate.textContent=`(${p.rate}%)`;
+    foodCommissionPreview.textContent=`+${this.money(p.commission)}`;
+    foodFeePreview.textContent=`+${this.money(p.fees)}`;
+    foodSellingPreview.textContent=this.money(p.selling);
+
+    if(!(mrp>0)||!(p.settlement>0)){
+      foodPricingWarning.textContent='Enter MRP and your settlement. Selling price will be calculated automatically.';
+      foodPricingWarning.className='';
+    }else if(p.selling>mrp){
+      foodPricingWarning.textContent=`Calculated selling price ${this.money(p.selling)} is above MRP ${this.money(mrp)}. Increase MRP or reduce settlement.`;
+      foodPricingWarning.className='bad';
+    }else{
+      foodPricingWarning.textContent=`Customer pays ${this.money(p.selling)} for the dish. Your settlement remains ${this.money(p.settlement)}. Restaurant delivery fee is added separately at checkout.`;
+      foodPricingWarning.className='good';
+    }
+    return p;
   },
 
   async load(){
@@ -115,19 +170,19 @@ const SellerFood = {
     fiSpice.value=item?.SpiceLevel||'medium';
     fiDescription.value=item?.Description||'';
     fiMRP.value=item?.MRP||item?.FinalPrice||'';
+    fiSettlement.value=item?.BankSettlement||item?.SellerSettlement||item?.FinalPrice||'';
     fiPrice.value=item?.FinalPrice||'';
-    fiSettlement.value=item?.FinalPrice||'';
     fiStock.value=Number(item?.Stock??20);
     fiPrep.value=Number(item?.PrepMinutes??20);
     fiServes.value=item?.Serves||'';
     fiAvailable.checked=item?.IsAvailable!==false;
-    fiBestseller.checked=Boolean(item?.IsBestseller);
     fiImage.value=item?.ImageURL||'';
     fiImagePreview.src=item?.ImageURL||'';
     fiImagePreview.classList.toggle('show',Boolean(item?.ImageURL));
     fiImageState.textContent=item?.ImageURL?'Current dish photo':'Real dish photo required.';
     foodItemTitle.textContent=item?'Edit Food Item':'Add Food Item';
     foodItemModal.classList.add('open');
+    this.updatePricing();
   },
   closeItem(){foodItemModal.classList.remove('open');this.selectedFile=null;},
   edit(id){const i=this.items.find(x=>String(x.MenuItemID)===String(id));if(i)this.openItem(i);},
@@ -144,9 +199,15 @@ const SellerFood = {
   async saveItem(){
     const editId=fiMenuId.value.trim();
     if(!fiName.value.trim())return this.toast('Dish name is required.');
-    const mrp=Number(fiMRP.value),price=Number(fiPrice.value),settlement=Number(fiSettlement.value);
-    if(!(mrp>0)||!(price>0)||price>mrp)return this.toast('Selling price must be valid and not exceed MRP.');
-    if(!(settlement>0)||settlement>price)return this.toast('Settlement must be positive and not exceed selling price.');
+    const mrp=Number(fiMRP.value);
+    const settlement=Number(fiSettlement.value);
+    const pricing=this.updatePricing();
+    const price=Number(pricing.selling||0);
+
+    if(!(mrp>0))return this.toast('MRP is required.');
+    if(!(settlement>0))return this.toast('Your settlement amount is required.');
+    if(!(price>0))return this.toast('Selling price could not be calculated.');
+    if(price>mrp)return this.toast('Calculated selling price is above MRP. Increase MRP or reduce settlement.');
 
     saveFoodItem.disabled=true;
     try{
@@ -171,8 +232,7 @@ const SellerFood = {
         PrepMinutes:Number(fiPrep.value||20),
         Serves:fiServes.value.trim(),
         ImageURL:image,
-        IsAvailable:fiAvailable.checked,
-        IsBestseller:fiBestseller.checked
+        IsAvailable:fiAvailable.checked
       };
       const result=editId
         ? await DesiMallAPI.updateSellerFoodItem(editId,payload)
