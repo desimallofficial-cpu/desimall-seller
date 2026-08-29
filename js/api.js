@@ -2413,6 +2413,71 @@ const DesiMallAPI = {
     return this._roleRest('seller',`/api/v1/seller/workspaces/${encodeURIComponent(type)}/primary`,{method:'PATCH',token,data:{}});
   },
 
+
+  // =========================================================
+  // SERVICES BUSINESS
+  // =========================================================
+
+  async getServiceVerticals() {
+    return this._roleRest('seller','/api/services/verticals',{method:'GET'});
+  },
+
+  async getSellerServicesProfile(token='') {
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/services/profile',{method:'GET',token});
+  },
+
+  async saveSellerServicesProfile(data={},token='') {
+    token=token||data.Token||data.token||'';
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/services/profile',{method:'PUT',data,token});
+  },
+
+  async submitCustomServiceVertical(data={},token='') {
+    token=token||data.Token||data.token||'';
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/services/custom-vertical',{method:'POST',data,token});
+  },
+
+  async getSellerServicePackages(token='') {
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/services/packages',{method:'GET',token});
+  },
+
+  async addSellerServicePackage(data={},token='') {
+    token=token||data.Token||data.token||'';
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/services/packages',{method:'POST',data,token});
+  },
+
+  async updateSellerServicePackage(packageId,data={},token='') {
+    token=token||data.Token||data.token||'';
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller',`/api/v1/seller/services/packages/${encodeURIComponent(packageId)}`,{method:'PATCH',data,token});
+  },
+
+  async addSellerServiceTeamMember(data={},token='') {
+    token=token||data.Token||data.token||'';
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/services/team',{method:'POST',data,token});
+  },
+
+  async getSellerServiceBookings(token='') {
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/services/bookings',{method:'GET',token});
+  },
+
+  async updateSellerServiceBooking(bookingId,data={},token='') {
+    token=token||data.Token||data.token||'';
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller',`/api/v1/seller/services/bookings/${encodeURIComponent(bookingId)}`,{method:'PATCH',data,token});
+  },
+
+  async collectSellerServicePayment(bookingId,token='') {
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller',`/api/v1/seller/services/bookings/${encodeURIComponent(bookingId)}/collect-payment`,{method:'POST',data:{},token});
+  },
+
   // =========================================================
   // FOOD RESTAURANT + MENU MANAGEMENT
   // =========================================================
