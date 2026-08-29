@@ -182,6 +182,12 @@ const SellerOrders = {
     }
 
     this.orders=Array.isArray(r.orders)?r.orders:[];
+    const requestedWorkspace=new URLSearchParams(location.search).get('workspace')||localStorage.getItem('desimall_seller_workspace')||'';
+    if(requestedWorkspace==='food'){
+      this.orders=this.orders.filter(x=>String(x.FulfillmentMode||'').toLowerCase()==='food');
+    }else if(requestedWorkspace==='marketplace'){
+      this.orders=this.orders.filter(x=>String(x.FulfillmentMode||'').toLowerCase()!=='food');
+    }
 
     try{
       localStorage.setItem(cacheKey,JSON.stringify(this.orders));

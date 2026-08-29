@@ -2389,6 +2389,24 @@ const DesiMallAPI = {
   },
 
 
+
+  async getSellerWorkspaces(token=''){
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/workspaces',{method:'GET',token});
+  },
+
+  async activateSellerWorkspace(type,displayName='',token=''){
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/workspaces/activate',{
+      method:'POST',token,data:{WorkspaceType:type,DisplayName:displayName}
+    });
+  },
+
+  async setPrimarySellerWorkspace(type,token=''){
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller',`/api/v1/seller/workspaces/${encodeURIComponent(type)}/primary`,{method:'PATCH',token,data:{}});
+  },
+
   // =========================================================
   // FOOD RESTAURANT + MENU MANAGEMENT
   // =========================================================
