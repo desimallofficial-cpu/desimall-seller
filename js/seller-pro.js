@@ -5,7 +5,7 @@
   if(!body)return;
 
   const pageNames={
-    'index.html':'Dashboard','products.html':'Products','inventory.html':'Inventory',
+    'index.html':'Dashboard','products.html':'Products','food-menu.html':'Food Menu','inventory.html':'Inventory',
     'orders.html':'Orders','returns.html':'Returns','hisab.html':'Payouts & Account',
     'support.html':'Support','profile.html':'Store Profile'
   };
@@ -32,6 +32,7 @@
         <a class="${active('returns.html')}" href="returns.html"><i class="fa-solid fa-arrow-rotate-left"></i><span>Returns</span></a>
         <div class="seller-pro-nav-section">Catalog</div>
         <a class="${active('products.html')}" href="products.html"><i class="fa-solid fa-box"></i><span>Products</span></a>
+        <a class="${active('food-menu.html')}" href="food-menu.html"><i class="fa-solid fa-utensils"></i><span>Food Menu</span><em class="nav-live">Live</em></a>
         <a class="${active('inventory.html')}" href="inventory.html"><i class="fa-solid fa-warehouse"></i><span>Inventory</span></a>
         <div class="seller-pro-nav-section">Business</div>
         <a class="${active('hisab.html')}" href="hisab.html"><i class="fa-solid fa-wallet"></i><span>Payouts & Account</span></a>

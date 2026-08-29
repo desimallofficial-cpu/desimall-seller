@@ -9,6 +9,7 @@ const SellerProfile={
   else{this.session.seller=r.seller||this.session.seller;localStorage.setItem(this.key,JSON.stringify(this.session));}
   this.fill(this.session.seller||{});this.fillKyc(this.session.seller||{});
   sellerProfileForm.onsubmit=e=>{e.preventDefault();this.save();};
+  saveSellerPickupLocation.onclick=()=>this.savePickupLocation();
   sellerKycForm.onsubmit=e=>{e.preventDefault();this.submitKyc();};
   sellerAvatarFile.onchange=e=>this.select('avatar',e.target.files[0]);
   shopLogoFile.onchange=e=>this.select('logo',e.target.files[0]);
@@ -17,7 +18,7 @@ const SellerProfile={
   sellerShopName.oninput=()=>shopPreviewName.textContent=sellerShopName.value||'Your Shop';sellerOwnerName.oninput=()=>shopPreviewOwner.textContent=sellerOwnerName.value||'Seller profile';
   sellerLogout.onclick=()=>{localStorage.removeItem(this.key);location.replace('login.html');};
  },
- fill(s){sellerShopName.value=s.ShopName||'';sellerOwnerName.value=s.SellerName||'';sellerMobile.value=s.Mobile||'';sellerEmail.value=s.Email||'';sellerAddress.value=s.Address||'';this.showAvatar(s.ProfileImage||'',s.SellerName||s.ShopName);this.showLogo(s.ShopLogo||'');this.showBanner(s.ShopBanner||'');shopPreviewName.textContent=s.ShopName||'Your Shop';shopPreviewOwner.textContent=s.SellerName||'Seller profile';},
+ fill(s){sellerShopName.value=s.ShopName||'';sellerOwnerName.value=s.SellerName||'';sellerMobile.value=s.Mobile||'';sellerEmail.value=s.Email||'';sellerAddress.value=s.Address||'';this.showAvatar(s.ProfileImage||'',s.SellerName||s.ShopName);this.showLogo(s.ShopLogo||'');this.showBanner(s.ShopBanner||'');shopPreviewName.textContent=s.ShopName||'Your Shop';shopPreviewOwner.textContent=s.SellerName||'Seller profile';const hasGps=Number.isFinite(Number(s.PickupLatitude))&&Number.isFinite(Number(s.PickupLongitude));sellerPickupLocationText.textContent=hasGps?`Saved: ${Number(s.PickupLatitude).toFixed(5)}, ${Number(s.PickupLongitude).toFixed(5)}`:'Pickup GPS not saved.';},
  fillKyc(s){
   kycBusinessType.value=s.BusinessType||'';kycGSTIN.value=s.GSTIN||'';kycPAN.value=s.PAN||'';kycAadhaar.value=s.Aadhaar||'';kycBankName.value=s.BankName||'';kycAccountNumber.value=s.AccountNumber||'';kycIFSC.value=s.IFSC||'';kycUPI.value=s.UPIID||'';
   const status=s.KYCStatus||'Not Submitted';sellerKycStatus.textContent=status;sellerKycStatus.className='kyc-status-badge '+String(status).toLowerCase().replace(/\s+/g,'-');
@@ -41,6 +42,28 @@ const SellerProfile={
   try{for(const type of ['avatar','logo','banner']){if(!this.files[type])continue;const up=await this.upload(this.files[type],type);if(!up||!up.success)throw new Error((up&&up.message)||`${type} upload failed.`);if(type==='avatar'){avatar=up.imageUrl;avatarId=up.fileId}if(type==='logo'){logo=up.imageUrl;logoId=up.fileId}if(type==='banner'){banner=up.imageUrl;bannerId=up.fileId}}
    const r=await DesiMallAPI.updateSellerProfile({Token:this.session.token,ShopName:sellerShopName.value.trim(),SellerName:sellerOwnerName.value.trim(),Email:sellerEmail.value.trim(),Address:sellerAddress.value.trim(),ProfileImage:avatar,ProfileImageFileID:avatarId,ShopLogo:logo,ShopLogoFileID:logoId,ShopBanner:banner,ShopBannerFileID:bannerId});if(!r.success)throw new Error(r.message||'Profile update failed.');this.session.seller=r.seller;localStorage.setItem(this.key,JSON.stringify(this.session));this.fill(r.seller);this.files={avatar:null,logo:null,banner:null};this.msg('Profile and branding updated.',true);SellerShell.apply(r.seller);
   }catch(err){this.msg(err.message||'Save failed.')}btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-floppy-disk"></i> Save profile & branding';
+ },
+ async savePickupLocation(){
+  const btn=saveSellerPickupLocation;
+  if(!navigator.geolocation)return this.msg('Location is not supported on this device.');
+  btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Getting location...';
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    try{
+      const r=await DesiMallAPI.updateSellerPickupLocation({
+        Latitude:pos.coords.latitude,
+        Longitude:pos.coords.longitude
+      },this.session.token||'');
+      if(!r.success)throw new Error(r.message||'Could not save pickup location.');
+      this.session.seller={...(this.session.seller||{}),PickupLatitude:r.PickupLatitude,PickupLongitude:r.PickupLongitude,PickupLocationUpdatedAt:r.PickupLocationUpdatedAt};
+      localStorage.setItem(this.key,JSON.stringify(this.session));
+      sellerPickupLocationText.textContent=`Saved: ${Number(r.PickupLatitude).toFixed(5)}, ${Number(r.PickupLongitude).toFixed(5)}`;
+      this.msg('Pickup map location saved. Rider can navigate to your shop.',true);
+    }catch(err){this.msg(err.message||'Could not save pickup location.');}
+    btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-location-crosshairs"></i> Use Current Shop Location';
+  },err=>{
+    this.msg(err.code===1?'Location permission denied. Browser me Location Allow karein.':'Could not read current location.');
+    btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-location-crosshairs"></i> Use Current Shop Location';
+  },{enableHighAccuracy:true,timeout:20000,maximumAge:3000});
  },
  async submitKyc(){
   const btn=submitSellerKyc;btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Uploading & submitting...';const s=this.session.seller||{}, docs={aadhaar:{url:s.AadhaarDocumentURL||'',id:s.AadhaarDocumentFileID||''},pan:{url:s.PANDocumentURL||'',id:s.PANDocumentFileID||''},gst:{url:s.GSTDocumentURL||'',id:s.GSTDocumentFileID||''},bank:{url:s.BankDocumentURL||'',id:s.BankDocumentFileID||''}};

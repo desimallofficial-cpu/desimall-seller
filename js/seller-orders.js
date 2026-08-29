@@ -1,12 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => SellerOrders.init());
 
 const SellerOrders = {
-  version: '0.7.7',
+  version: '0.7.8',
   sessionKey:'desimall_seller_session',
   session:null,
   orders:[],
   activeStatus:'',
   selectedOrderId:'',
+  reconnectTimer:null,
+  reconnecting:false,
   money:n=>`₹${Number(n||0).toLocaleString('en-IN')}`,
   itemRate(i){
     const value=i?.UnitPrice??i?.Rate??i?.unit_price??i?.Price??i?.price??0;
@@ -66,13 +68,19 @@ const SellerOrders = {
   },
   async logout(){const token=this.session?.token||'';localStorage.removeItem(this.sessionKey);if(token)await DesiMallAPI.sellerLogout(token);location.replace('login.html');},
 
-  async load(){
+  async load({silent=false, retry=true}={}){
     this.session=this.readSession();
+
     const btn=document.getElementById('refreshOrders');
     const cacheKey=`desimall_seller_orders_${this.session?.seller?.SellerID||'current'}`;
-    btn.disabled=true;
-    btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> लोड हो रहा';
+
+    if(!silent){
+      btn.disabled=true;
+      btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> लोड हो रहा';
+    }
+
     let r;
+
     try{
       r=await DesiMallAPI.getSellerOrders(this.session.token);
       this.session=this.readSession();
@@ -82,48 +90,117 @@ const SellerOrders = {
         location.replace('login.html?reason=session');
         return;
       }
-      r={success:false,message:error?.message||'Network unavailable',offline:true};
+
+      // Render free/cold services can occasionally need a wake-up request.
+      if(retry){
+        await DesiMallAPI.warmBackend();
+        await new Promise(resolve=>setTimeout(resolve,700));
+
+        try{
+          r=await DesiMallAPI.getSellerOrders(this.session.token);
+          this.session=this.readSession();
+        }catch(secondError){
+          if(secondError?.status===401||secondError?.code==='SELLER_SESSION_ENDED'){
+            localStorage.removeItem(this.sessionKey);
+            location.replace('login.html?reason=session');
+            return;
+          }
+
+          r={
+            success:false,
+            message:secondError?.message||error?.message||'Network unavailable',
+            offline:true
+          };
+        }
+      }else{
+        r={
+          success:false,
+          message:error?.message||'Network unavailable',
+          offline:true
+        };
+      }
     }finally{
-      btn.disabled=false;
-      btn.innerHTML='<i class="fa-solid fa-rotate"></i> ताज़ा करें';
+      if(!silent){
+        btn.disabled=false;
+        btn.innerHTML='<i class="fa-solid fa-rotate"></i> ताज़ा करें';
+      }
     }
 
-    if(!r.success){
-      const m=String(r.message||r.error||'').toLowerCase();
+    if(!r?.success){
+      const m=String(r?.message||r?.error||'').toLowerCase();
+
       if(/invalid seller session|session expired|seller login required|account is not active|invalid or expired supabase session|seller account is required|seller account is not active/.test(m)){
         localStorage.removeItem(this.sessionKey);
         location.replace('login.html?reason=session');
         return;
       }
+
+      let hasCache=false;
+
       try{
         const cached=JSON.parse(localStorage.getItem(cacheKey)||'[]');
+
         if(Array.isArray(cached)&&cached.length){
+          hasCache=true;
           this.orders=cached;
           this.render();
-          this.toast('Live backend slow hai. Last saved orders dikh rahe hain.');
-          return;
+
+          if(!silent){
+            const reason=String(r?.message||'Backend temporarily unavailable');
+            this.toast(`Live data connect nahi hua: ${reason}. Last saved orders dikh rahe hain.`);
+          }
         }
       }catch(_){}
-      this.orders=[];
-      this.render();
-      this.toast(r.message||'Backend temporarily unavailable. Refresh karke dobara try karein.');
+
+      if(!hasCache){
+        this.orders=[];
+        this.render();
+
+        if(!silent){
+          this.toast(r?.message||'Backend temporarily unavailable. Refresh karke dobara try karein.');
+        }
+      }
+
+      // Keep trying quietly; live data replaces cache automatically when available.
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer=setTimeout(()=>{
+        this.load({silent:true,retry:true});
+      },12000);
+
       return;
     }
+
+    clearTimeout(this.reconnectTimer);
+    this.reconnectTimer=null;
 
     if(r.seller){
       this.session.seller=r.seller;
       localStorage.setItem(this.sessionKey,JSON.stringify(this.session));
-      document.getElementById('sellerWelcome').textContent=`${r.seller.ShopName||r.seller.SellerName||'Seller'} • Accept, prepare and hand orders to the assigned rider.`;
+
+      document.getElementById('sellerWelcome').textContent=
+        `${r.seller.ShopName||r.seller.SellerName||'Seller'} • Accept, prepare and hand orders to the assigned rider.`;
     }
+
     this.orders=Array.isArray(r.orders)?r.orders:[];
-    try{localStorage.setItem(cacheKey,JSON.stringify(this.orders));}catch(_){}
+
+    try{
+      localStorage.setItem(cacheKey,JSON.stringify(this.orders));
+    }catch(_){}
+
     this.render();
+
+    if(silent){
+      console.info(
+        `Seller orders refreshed live${r?.meta?.responseMs!=null?` in ${r.meta.responseMs}ms`:''}.`
+      );
+    }
   },
+
   filtered(){
     const q=document.getElementById('orderSearch').value.toLowerCase().trim();
     const status=(this.activeStatus||document.getElementById('orderStatusFilter').value).toLowerCase();
     return this.orders.filter(o=>{
-      const text=[o.OrderID,o.CustomerName,o.CustomerMobile,o.PaymentMode,o.TrackingID,o.CourierName,...(o.Items||[]).map(i=>`${i.ProductName} ${i.ProductID}`)].join(' ').toLowerCase();
+      const text=[o.OrderID,o.CustomerName,o.PaymentMode,o.TrackingID,o.CourierName,...(o.Items||[]).map(i=>`${i.ProductName} ${i.ProductID}`)].join(' ').toLowerCase();
       return (!q||text.includes(q))&&(!status||String(o.SellerStatus||'Pending').toLowerCase()===status);
     });
   },
@@ -144,16 +221,19 @@ const SellerOrders = {
   avatar(o){return o.CustomerAvatar?`<img src="${this.esc(o.CustomerAvatar)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'${this.esc(this.initials(o.CustomerName))}'}))">`:`<span>${this.esc(this.initials(o.CustomerName))}</span>`;},
   card(o){
     const status=o.SellerStatus||'Pending';
+    const isTez=Boolean(o.IsTez||String(o.FulfillmentMode||'').toLowerCase()==='tez');
+    const targetMax=Math.min(25,Number(o.DeliveryTargetMaxMinutes||25));
     const items=(o.Items||[]).map(i=>`<div class="seller-order-item"><img src="${this.esc(i.ImageURL||'../assets/products/noimage.jpg')}" onerror="this.src='../assets/products/noimage.jpg'"><div><strong>${this.esc(i.ProductName)}</strong><span>${this.esc(i.ProductID||'')} · Qty ${i.Qty} · ${this.esc(i.UnitValue||1)} ${this.esc(i.Unit||'Piece')}</span></div><b>${this.money(this.itemAmount(i))}</b></div>`).join('');
     const buttons=this.statusButtons(o.OrderID,status);
     const reason=o.RejectedReason||o.CancelReason||o.DeliveryFailedReason||'';
-    return `<article class="seller-order-card">
-      <div class="seller-order-head"><div><strong>${this.esc(o.OrderID)}</strong><span>${this.esc(o.OrderDate||'')} · ${this.esc(o.PaymentMode||'COD')}</span></div><span class="status ${this.statusClass(status)}">${this.esc(status)}</span></div>
-      <div class="seller-order-customer"><div class="customer-identity"><div class="customer-avatar">${this.avatar(o)}</div><div><b>${this.esc(o.CustomerName||'Customer')}</b><span>${this.esc(o.CustomerMobile||'')}</span></div></div><div><span>${this.esc(o.DeliveryAddress||'')}</span><span>${this.esc([o.City,o.State,o.Pincode].filter(Boolean).join(', '))}</span></div></div>
+    return `<article class="seller-order-card ${isTez?'seller-order-tez':''}">
+      <div class="seller-order-head"><div><div class="seller-order-code-row"><strong>${this.esc(o.OrderID)}</strong>${isTez?`<span class="seller-tez-badge"><i class="fa-solid fa-bolt"></i> Tez · ≤${targetMax} min</span>`:''}</div><span>${this.esc(o.OrderDate||'')} · ${this.esc(o.PaymentMode||'COD')}</span></div><span class="status ${this.statusClass(status)}">${this.esc(status)}</span></div>
+      ${isTez?`<div class="seller-tez-priority"><i class="fa-solid fa-stopwatch"></i><div><strong>Priority Tez order</strong><span>Accept quickly, prepare immediately, then mark Ready for pickup. The action button will continue changing with each step.</span></div></div>`:''}
+      <div class="seller-order-customer"><div class="customer-identity"><div class="customer-avatar">${this.avatar(o)}</div><div><b>${this.esc(o.CustomerName||'Customer')}</b><span class="seller-private-note"><i class="fa-solid fa-shield-halved"></i> Customer contact hidden</span></div></div><div class="seller-delivery-address"><span>${this.esc(o.DeliveryAddress||'')}</span><span>${this.esc([o.City,o.State,o.Pincode].filter(Boolean).join(', '))}</span></div></div>
       <div class="seller-order-items">${items}</div>
       ${(o.CourierName||o.TrackingID)?`<div class="shipping-info"><span><i class="fa-solid fa-truck"></i> ${this.esc(o.CourierName||'Courier')}</span><strong>${this.esc(o.TrackingID||'')}</strong></div>`:''}
       ${reason?`<div class="order-reason"><i class="fa-solid fa-circle-info"></i> ${this.esc(reason)}</div>`:''}
-      <div class="seller-order-footer"><div><span>Seller amount</span><strong>${this.money(o.SellerAmount)}</strong></div><div class="order-status-actions"><button class="btn btn-light" onclick="SellerOrders.showDetails('${this.esc(o.OrderID)}')"><i class="fa-solid fa-eye"></i> Details</button>${buttons}</div></div>
+      <div class="seller-order-footer"><div><span>Seller amount</span><strong>${this.money(o.SellerAmount)}</strong></div><div class="order-status-actions"><button class="btn btn-light seller-details-btn" onclick="SellerOrders.showDetails('${this.esc(o.OrderID)}')"><i class="fa-solid fa-eye"></i> Details</button>${buttons}</div></div>
     </article>`;
   },
   statusClass(s){s=String(s).toLowerCase();if(['cancelled','returned'].includes(s))return'bad';if(['delivered'].includes(s))return'good';if(['ready for pickup','pickup assigned','pickup accepted','picked up','on the way','reached customer'].includes(s))return'info';return'warn';},
@@ -213,7 +293,7 @@ const SellerOrders = {
         <section class="detail-section">
           <h3><i class="fa-solid fa-user"></i> Customer & delivery</h3>
           <p><b>Name:</b> ${this.esc(o.CustomerName||'Customer')}</p>
-          <p><b>Mobile:</b> ${this.esc(o.CustomerMobile||'—')}</p>
+          <p><b>Contact:</b> Hidden for seller privacy</p>
           <p><b>Address:</b> ${this.esc(address||'—')}</p>
         </section>
         <section class="detail-section">
@@ -249,9 +329,9 @@ const SellerOrders = {
     const commonStyle=`<style>
       *{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#111;margin:0;padding:24px;background:#fff}.doc{max-width:800px;margin:auto}.head{display:flex;justify-content:space-between;gap:20px;border-bottom:3px solid #ff6b00;padding-bottom:14px}.brand{font-size:26px;font-weight:900;color:#ff6b00}.muted{color:#666;font-size:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:18px 0}.box{border:1px solid #ddd;border-radius:8px;padding:13px}.box h3{margin:0 0 8px;font-size:14px;color:#ff6b00}.box p{margin:4px 0;font-size:12px;line-height:1.45}table{width:100%;border-collapse:collapse;margin-top:15px}th,td{border:1px solid #ddd;padding:9px;text-align:left;font-size:12px}th{background:#f3f4f6}.totals{margin-left:auto;width:310px;margin-top:16px}.totals div{display:flex;justify-content:space-between;padding:7px;border-bottom:1px solid #eee}.total{font-size:16px;font-weight:bold;background:#fff3eb}.actions{display:none}.label{border:2px solid #111;padding:18px;max-width:620px;margin:auto}.label-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:18px}.barcode{height:55px;background:repeating-linear-gradient(90deg,#111 0,#111 2px,#fff 2px,#fff 5px);margin:12px 0}.big{font-size:22px;font-weight:900}.packing-check{width:18px;height:18px;border:1px solid #111;display:inline-block;vertical-align:middle;margin-right:7px}@media print{body{padding:0}.doc{max-width:none}.page-break{page-break-before:always}}</style>`;
     const header=`<div class="head"><div><div class="brand">DesiMall</div><div class="muted">${this.esc(seller.ShopName||seller.SellerName||'Seller')}</div></div><div style="text-align:right"><b>${this.esc(invoice)}</b><div class="muted">Order: ${this.esc(o.OrderID)}</div><div class="muted">${this.date(o.CreatedAt||o.OrderDate)}</div></div></div>`;
-    const invoiceBody=`<div class="doc">${header}<div class="grid"><div class="box"><h3>Sold by</h3><p><b>${this.esc(seller.ShopName||'DesiMall Seller')}</b></p><p>${this.esc(seller.Address||seller.BusinessAddress||'')}</p><p>${this.esc(seller.Email||'')}</p></div><div class="box"><h3>Ship to</h3><p><b>${this.esc(o.CustomerName||'Customer')}</b></p><p>${this.esc(fullAddress)}</p><p>${this.esc(o.CustomerMobile||'')}</p></div></div><table><thead><tr><th>#</th><th>Item</th><th>Qty</th><th>Unit</th><th>Rate</th><th>Amount</th></tr></thead><tbody>${rows}</tbody></table><div class="totals"><div><span>Subtotal</span><b>${this.money(o.Subtotal||o.SellerAmount)}</b></div><div><span>Coupon</span><b>-${this.money(o.CouponDiscount||0)}</b></div><div><span>Delivery</span><b>${Number(o.DeliveryCharge||0)?this.money(o.DeliveryCharge):'FREE'}</b></div><div class="total"><span>Total</span><b>${this.money(o.TotalAmount||o.SellerAmount)}</b></div></div><p class="muted">Payment: ${this.esc(o.PaymentMode||'COD')} · ${this.esc(o.PaymentStatus||'Pending')}</p></div>`;
-    const packingBody=`<div class="doc">${header}<h2>Packing Slip</h2><div class="grid"><div class="box"><h3>Customer</h3><p><b>${this.esc(o.CustomerName||'')}</b></p><p>${this.esc(fullAddress)}</p><p>${this.esc(o.CustomerMobile||'')}</p></div><div class="box"><h3>Shipment</h3><p>Courier: ${this.esc(o.CourierName||'Not assigned')}</p><p>Tracking: ${this.esc(o.TrackingID||'Not assigned')}</p><p>Payment: ${this.esc(o.PaymentMode||'COD')}</p></div></div><table><thead><tr><th>Check</th><th>Product</th><th>Qty</th><th>Unit</th></tr></thead><tbody>${(o.Items||[]).map(i=>`<tr><td><span class="packing-check"></span></td><td>${this.esc(i.ProductName||'')}<br><small>${this.esc(i.ProductID||'')}</small></td><td>${Number(i.Qty||0)}</td><td>${this.esc(`${i.UnitValue||1} ${i.Unit||'Piece'}`)}</td></tr>`).join('')}</tbody></table><div class="box" style="margin-top:18px"><h3>Seller checklist</h3><p>☐ Product verified &nbsp; ☐ Quantity verified &nbsp; ☐ Invoice enclosed &nbsp; ☐ Package sealed</p></div></div>`;
-    const labelBody=`<div class="label"><div class="label-grid"><div><div class="big">SHIP TO</div><p><b>${this.esc(o.CustomerName||'Customer')}</b></p><p>${this.esc(fullAddress)}</p><p>Mobile: ${this.esc(o.CustomerMobile||'')}</p></div><div><div class="brand">DesiMall</div><p><b>${this.esc(o.PaymentMode||'COD')}</b></p><p>${this.money(o.TotalAmount||o.SellerAmount)}</p></div></div><hr><p><b>Order:</b> ${this.esc(o.OrderID)}</p><p><b>Courier:</b> ${this.esc(o.CourierName||'Not assigned')}</p><p><b>Tracking:</b> ${this.esc(o.TrackingID||'Not assigned')}</p><div class="barcode"></div><div class="big" style="text-align:center">${this.esc(o.TrackingID||o.OrderID)}</div><p class="muted" style="text-align:center">Handle with care · Seller: ${this.esc(seller.ShopName||seller.SellerName||'DesiMall Seller')}</p></div>`;
+    const invoiceBody=`<div class="doc">${header}<div class="grid"><div class="box"><h3>Sold by</h3><p><b>${this.esc(seller.ShopName||'DesiMall Seller')}</b></p><p>${this.esc(seller.Address||seller.BusinessAddress||'')}</p><p>${this.esc(seller.Email||'')}</p></div><div class="box"><h3>Ship to</h3><p><b>${this.esc(o.CustomerName||'Customer')}</b></p><p>${this.esc(fullAddress)}</p></div></div><table><thead><tr><th>#</th><th>Item</th><th>Qty</th><th>Unit</th><th>Rate</th><th>Amount</th></tr></thead><tbody>${rows}</tbody></table><div class="totals"><div><span>Subtotal</span><b>${this.money(o.Subtotal||o.SellerAmount)}</b></div><div><span>Coupon</span><b>-${this.money(o.CouponDiscount||0)}</b></div><div><span>Delivery</span><b>${Number(o.DeliveryCharge||0)?this.money(o.DeliveryCharge):'FREE'}</b></div><div class="total"><span>Total</span><b>${this.money(o.TotalAmount||o.SellerAmount)}</b></div></div><p class="muted">Payment: ${this.esc(o.PaymentMode||'COD')} · ${this.esc(o.PaymentStatus||'Pending')}</p></div>`;
+    const packingBody=`<div class="doc">${header}<h2>Packing Slip</h2><div class="grid"><div class="box"><h3>Customer</h3><p><b>${this.esc(o.CustomerName||'')}</b></p><p>${this.esc(fullAddress)}</p></div><div class="box"><h3>Shipment</h3><p>Courier: ${this.esc(o.CourierName||'Not assigned')}</p><p>Tracking: ${this.esc(o.TrackingID||'Not assigned')}</p><p>Payment: ${this.esc(o.PaymentMode||'COD')}</p></div></div><table><thead><tr><th>Check</th><th>Product</th><th>Qty</th><th>Unit</th></tr></thead><tbody>${(o.Items||[]).map(i=>`<tr><td><span class="packing-check"></span></td><td>${this.esc(i.ProductName||'')}<br><small>${this.esc(i.ProductID||'')}</small></td><td>${Number(i.Qty||0)}</td><td>${this.esc(`${i.UnitValue||1} ${i.Unit||'Piece'}`)}</td></tr>`).join('')}</tbody></table><div class="box" style="margin-top:18px"><h3>Seller checklist</h3><p>☐ Product verified &nbsp; ☐ Quantity verified &nbsp; ☐ Invoice enclosed &nbsp; ☐ Package sealed</p></div></div>`;
+    const labelBody=`<div class="label"><div class="label-grid"><div><div class="big">SHIP TO</div><p><b>${this.esc(o.CustomerName||'Customer')}</b></p><p>${this.esc(fullAddress)}</p></div><div><div class="brand">DesiMall</div><p><b>${this.esc(o.PaymentMode||'COD')}</b></p><p>${this.money(o.TotalAmount||o.SellerAmount)}</p></div></div><hr><p><b>Order:</b> ${this.esc(o.OrderID)}</p><p><b>Courier:</b> ${this.esc(o.CourierName||'Not assigned')}</p><p><b>Tracking:</b> ${this.esc(o.TrackingID||'Not assigned')}</p><div class="barcode"></div><div class="big" style="text-align:center">${this.esc(o.TrackingID||o.OrderID)}</div><p class="muted" style="text-align:center">Handle with care · Seller: ${this.esc(seller.ShopName||seller.SellerName||'DesiMall Seller')}</p></div>`;
     const body=type==='invoice'?invoiceBody:type==='packing'?packingBody:type==='label'?labelBody:`${invoiceBody}<div class="page-break"></div>${packingBody}<div class="page-break"></div>${labelBody}`;
     return `<!doctype html><html><head><meta charset="utf-8"><title>${this.esc(type)} - ${this.esc(o.OrderID)}</title>${commonStyle}</head><body>${body}<script>window.onload=()=>setTimeout(()=>window.print(),250);<\/script></body></html>`;
   },

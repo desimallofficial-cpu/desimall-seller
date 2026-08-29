@@ -1,8 +1,11 @@
 const SellerAuth = {
   key: 'desimall_seller_session',
 
+  sellerGps: null,
+
   init() {
     this.bindTabs();
+    this.bindSellerGps();
 
     document
       .getElementById('sellerLoginForm')
@@ -19,6 +22,76 @@ const SellerAuth = {
       });
 
     this.checkExistingSession();
+  },
+
+  bindSellerGps() {
+    const button = document.getElementById('btnCaptureSellerGps');
+    if (!button) return;
+    button.onclick = () => this.captureSellerGps();
+  },
+
+  captureSellerGps() {
+    const status = document.getElementById('sellerGpsStatus');
+
+    if (!navigator.geolocation) {
+      if (status) {
+        status.textContent = 'Location is not supported on this device/browser.';
+        status.className = 'seller-gps-status bad';
+      }
+      return;
+    }
+
+    if (status) {
+      status.textContent = 'Getting precise shop location…';
+      status.className = 'seller-gps-status';
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        const lat = Number(position.coords.latitude);
+        const lon = Number(position.coords.longitude);
+        const accuracy = Number(position.coords.accuracy || 0);
+
+        if (!Number.isFinite(lat) || !Number.isFinite(lon) ||
+            (Math.abs(lat) < 0.0001 && Math.abs(lon) < 0.0001)) {
+          if (status) {
+            status.textContent = 'Invalid GPS received. Please try again.';
+            status.className = 'seller-gps-status bad';
+          }
+          return;
+        }
+
+        this.sellerGps = { latitude: lat, longitude: lon, accuracy };
+
+        const latEl = document.getElementById('regLatitude');
+        const lonEl = document.getElementById('regLongitude');
+        const accEl = document.getElementById('regGpsAccuracy');
+        if (latEl) latEl.value = lat.toFixed(7);
+        if (lonEl) lonEl.value = lon.toFixed(7);
+        if (accEl) accEl.value = String(Math.round(accuracy));
+
+        if (status) {
+          status.textContent = `GPS captured: ${lat.toFixed(6)}, ${lon.toFixed(6)} · ±${Math.round(accuracy)}m`;
+          status.className = accuracy <= 500
+            ? 'seller-gps-status good'
+            : 'seller-gps-status bad';
+        }
+      },
+      error => {
+        if (status) {
+          status.textContent =
+            error.code === 1
+              ? 'Location permission denied. Allow Precise Location to register.'
+              : 'Could not get precise location. Turn on GPS and try again.';
+          status.className = 'seller-gps-status bad';
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 20000
+      }
+    );
   },
 
   bindTabs() {
@@ -199,6 +272,25 @@ const SellerAuth = {
       return this.message('Password kam se kam 6 characters ka hona chahiye.');
     }
 
+    const shopAddress =
+      document.getElementById('regAddress')?.value.trim() || '';
+    const latitude = Number(document.getElementById('regLatitude')?.value);
+    const longitude = Number(document.getElementById('regLongitude')?.value);
+    const accuracyM = Number(document.getElementById('regGpsAccuracy')?.value);
+
+    if (!shopAddress) {
+      return this.message('Exact shop/pickup address enter karein.');
+    }
+
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude) ||
+        (Math.abs(latitude) < 0.0001 && Math.abs(longitude) < 0.0001)) {
+      return this.message('Registration se pahle Use Current Location se exact shop GPS capture karein.');
+    }
+
+    if (Number.isFinite(accuracyM) && accuracyM > 500) {
+      return this.message('GPS accuracy weak hai. Precise Location ON karke location dubara capture karein.');
+    }
+
     const button =
       document.querySelector('#sellerRegisterForm button[type="submit"]');
 
@@ -212,8 +304,10 @@ const SellerAuth = {
           document.getElementById('regSellerName')?.value.trim() || '',
         Mobile: mobile,
         Email: email,
-        Address:
-          document.getElementById('regAddress')?.value.trim() || '',
+        Address: shopAddress,
+        Latitude: latitude,
+        Longitude: longitude,
+        AccuracyM: Number.isFinite(accuracyM) ? accuracyM : null,
         Password: password
       });
 
@@ -227,6 +321,12 @@ const SellerAuth = {
 
       if (result?.success) {
         document.getElementById('sellerRegisterForm')?.reset();
+        this.sellerGps = null;
+        const gpsStatus = document.getElementById('sellerGpsStatus');
+        if (gpsStatus) {
+          gpsStatus.textContent = 'Location not captured';
+          gpsStatus.className = 'seller-gps-status';
+        }
       }
     } catch (error) {
       this.message(

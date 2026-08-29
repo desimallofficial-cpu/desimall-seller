@@ -1127,6 +1127,26 @@ const DesiMallAPI = {
     }
   },
 
+  async warmBackend(timeoutMs = 15000) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+    try {
+      const response = await fetch(`${API_CONFIG.BASE_URL}/health`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' },
+        cache: 'no-store',
+        signal: controller.signal
+      });
+
+      return response.ok;
+    } catch (_) {
+      return false;
+    } finally {
+      clearTimeout(timer);
+    }
+  },
+
   // =========================================================
   // SELLER — SUPABASE / RENDER API v0.7.0
   // =========================================================
@@ -1168,7 +1188,7 @@ const DesiMallAPI = {
   },
 
   getSellerOrders(token) {
-    return this._sellerRest('/api/v1/seller/orders?limit=100', {
+    return this._sellerRest('/api/v1/seller/orders?limit=50', {
       method: 'GET',
       token
     });
@@ -2272,6 +2292,14 @@ const DesiMallAPI = {
     );
   },
 
+  updateSellerPickupLocation(data = {}, token = '') {
+    return this._roleRest('seller', '/api/v1/seller/pickup-location', {
+      method: 'POST',
+      data,
+      token
+    });
+  },
+
   updateSellerProfile(data) {
     return this.post(
       'updateSellerProfile',
@@ -2358,6 +2386,49 @@ const DesiMallAPI = {
         FileID: fileId
       }
     );
+  },
+
+
+  // =========================================================
+  // FOOD RESTAURANT + MENU MANAGEMENT
+  // =========================================================
+
+  async getSellerFoodRestaurant(token = '') {
+    if (!token) {
+      try { token = JSON.parse(localStorage.getItem('desimall_seller_session') || '{}')?.token || ''; } catch (_) {}
+    }
+    return this._roleRest('seller','/api/v1/seller/food/restaurant',{method:'GET',token});
+  },
+
+  async saveSellerFoodRestaurant(data = {}) {
+    let token = data.Token || data.token || '';
+    if (!token) {
+      try { token = JSON.parse(localStorage.getItem('desimall_seller_session') || '{}')?.token || ''; } catch (_) {}
+    }
+    return this._roleRest('seller','/api/v1/seller/food/restaurant',{method:'PUT',data,token});
+  },
+
+  async getSellerFoodMenu(token = '') {
+    if (!token) {
+      try { token = JSON.parse(localStorage.getItem('desimall_seller_session') || '{}')?.token || ''; } catch (_) {}
+    }
+    return this._roleRest('seller','/api/v1/seller/food/menu',{method:'GET',token});
+  },
+
+  async addSellerFoodItem(data = {}) {
+    let token = data.Token || data.token || '';
+    if (!token) {
+      try { token = JSON.parse(localStorage.getItem('desimall_seller_session') || '{}')?.token || ''; } catch (_) {}
+    }
+    return this._roleRest('seller','/api/v1/seller/food/menu',{method:'POST',data,token});
+  },
+
+  async updateSellerFoodItem(menuItemId, data = {}) {
+    let token = data.Token || data.token || '';
+    if (!token) {
+      try { token = JSON.parse(localStorage.getItem('desimall_seller_session') || '{}')?.token || ''; } catch (_) {}
+    }
+    return this._roleRest('seller',`/api/v1/seller/food/menu/${encodeURIComponent(String(menuItemId))}`,{method:'PATCH',data,token});
   },
 
   // =========================================================
