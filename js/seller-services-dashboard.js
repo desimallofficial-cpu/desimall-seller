@@ -1,6 +1,6 @@
 
 const SellerServicesDashboard={
-  session:{},verticals:[],profile:null,team:[],
+  session:{},verticals:[],profile:null,team:[],blockedDates:[],
   esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));},
   async init(){
     try{this.session=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')}catch{}
@@ -8,6 +8,7 @@ const SellerServicesDashboard={
     servicesProfileForm.onsubmit=e=>{e.preventDefault();this.saveProfile()};
     submitCustomVertical.onclick=()=>this.submitCustom();
     addTeam.onclick=()=>this.addTeam();
+    addBlockedDate.onclick=()=>this.addBlockedDate();
     await this.load();
   },
   async load(){
@@ -19,10 +20,10 @@ const SellerServicesDashboard={
         DesiMallAPI.getSellerServiceBookings(this.session.token)
       ]);
       this.verticals=v.verticals||[];
-      this.profile=p.provider||null;this.team=p.team||[];
+      this.profile=p.provider||null;this.team=p.team||[];this.blockedDates=p.blockedDates||[];
       this.renderVerticals(p.verticals||[]);
       this.fillProfile(p);
-      this.renderTeam();
+      this.renderTeam();this.renderBlockedDates();
       const packages=pk.packages||[], bookings=b.bookings||[];
       sdPackages.textContent=packages.length;
       sdBookings.textContent=bookings.filter(x=>!['completed','cancelled','rejected','no_show'].includes(x.Status)).length;
@@ -77,6 +78,19 @@ const SellerServicesDashboard={
     if(!r.success)return alert(r.message||'Could not submit custom vertical');
     customVerticalName.value='';customVerticalDesc.value='';
     alert('Custom vertical submitted for review. Once approved, you can select it and create packages.');
+  },
+  renderBlockedDates(){
+    const today=new Date().toISOString().slice(0,10);blockDateInput.min=today;
+    blockedDateList.innerHTML=this.blockedDates.length?this.blockedDates.map(x=>`<span class="svc-block-chip"><b>${this.esc(x.Date)}</b>${x.Reason?`<small>${this.esc(x.Reason)}</small>`:''}<button type="button" onclick="SellerServicesDashboard.removeBlockedDate('${this.esc(x.BlockedDateID)}')" title="Remove blocked date"><i class="fa-solid fa-xmark"></i></button></span>`).join(''):'<span style="color:#64748b;font-size:8px">No blocked dates. Customers can book on open working days within the advance range.</span>';
+  },
+  async addBlockedDate(){
+    const date=blockDateInput.value;if(!date)return alert('Choose a date to block.');
+    const r=await DesiMallAPI.addSellerServiceBlockedDate({Date:date,Reason:blockDateReason.value.trim()},this.session.token);
+    if(!r.success)return alert(r.message||'Could not block date');blockDateInput.value='';blockDateReason.value='';await this.load();
+  },
+  async removeBlockedDate(id){
+    if(!confirm('Make this date bookable again?'))return;
+    const r=await DesiMallAPI.deleteSellerServiceBlockedDate(id,this.session.token);if(!r.success)return alert(r.message||'Could not remove blocked date');await this.load();
   },
   renderTeam(){
     teamList.innerHTML=this.team.length?this.team.map(x=>`<div class="team-row"><div><b>${this.esc(x.Name)}</b><div style="color:#94a3b8;font-size:8px">${this.esc(x.Phone||'')} · ${this.esc((x.Skills||[]).join(', '))}</div></div><span>${x.IsActive?'Active':'Inactive'}</span></div>`).join(''):'<div style="color:#64748b;font-size:9px">No team members yet. Solo providers can leave this empty.</div>';

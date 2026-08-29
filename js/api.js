@@ -2455,6 +2455,18 @@ const DesiMallAPI = {
     return this._roleRest('seller','/api/v1/seller/services/profile',{method:'PUT',data,token});
   },
 
+
+  async addSellerServiceBlockedDate(data={},token='') {
+    token=token||data.Token||data.token||'';
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/services/blocked-dates',{method:'POST',data,token});
+  },
+
+  async deleteSellerServiceBlockedDate(blockedDateId,token='') {
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller',`/api/v1/seller/services/blocked-dates/${encodeURIComponent(blockedDateId)}`,{method:'DELETE',token});
+  },
+
   async submitCustomServiceVertical(data={},token='') {
     token=token||data.Token||data.token||'';
     if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
