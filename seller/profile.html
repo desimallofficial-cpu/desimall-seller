@@ -3,18 +3,20 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Seller Profile - DesiMall</title>
+  <title>Business Account - DesiMall</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css?v=0.32.3">
   <link rel="stylesheet" href="../css/panel.css?v=0.32.3">
   <link rel="stylesheet" href="../css/global-theme.css?v=0.32.3">
   <link rel="stylesheet" href="../css/seller.css?v=0.32.3">
 <style>
 .kyc-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px}.kyc-head h2{margin:0 0 6px}.kyc-head p{margin:0;color:var(--muted,#94a3b8)}.kyc-status-badge{padding:8px 12px;border-radius:999px;background:#334155;font-weight:800}.kyc-status-badge.approved{background:#166534;color:#bbf7d0}.kyc-status-badge.submitted,.kyc-status-badge.pending{background:#854d0e;color:#fde68a}.kyc-status-badge.rejected{background:#7f1d1d;color:#fecaca}.kyc-notice{padding:12px 14px;border-radius:10px;background:#1e293b;margin-bottom:18px;color:#cbd5e1}.kyc-notice.good{background:#14532d;color:#dcfce7}.kyc-notice.bad{background:#7f1d1d;color:#fee2e2}.kyc-form select,.kyc-form input[type=file]{width:100%}.doc-link{display:inline-block;margin-top:8px;color:#fb923c;font-weight:700}.hidden{display:none!important}.kyc-review-box{padding:14px;border:1px solid #334155;border-radius:10px;background:#111827}.kyc-review-box p{margin:8px 0}.kyc-review-box small{color:#94a3b8}@media(max-width:700px){.kyc-head{flex-direction:column}}
+#workspaceAccountCard{background:linear-gradient(120deg,#15243a,#172231 62%,#39251a);border-color:#3a4b61}
+#workspaceAccountCard.hidden{display:none!important}
 </style><link rel="stylesheet" href="../css/seller-simple.css?v=0.32.3"><link rel="stylesheet" href="../css/seller-pro.css?v=0.32.3"><link rel="stylesheet" href="../css/seller-professional-v1-1.css?v=0.32.3">
 
 <script id="dmReleaseBootstrap">
 (() => {
-  const RELEASE = 'v0.32.3';
+  const RELEASE = 'v0.35.2';
   window.DESIMALL_RELEASE = RELEASE;
   try {
     const prev = localStorage.getItem('desimall_release');
@@ -36,14 +38,29 @@
 <div class="panel-shell">
   <aside class="panel-sidebar"></aside>
   <main class="panel-main">
-    <header class="panel-topbar"><div><h1>दुकान की पहचान</h1><p>फोटो, दुकान का नाम, लोगो, बैनर और जरूरी जानकारी अपडेट करें।</p></div><div class="top-actions"><a class="btn btn-light" href="https://desimall-customer.onrender.com/"><i class="fa-solid fa-store"></i> Customer Store</a><button class="btn btn-light" id="sellerLogout"><i class="fa-solid fa-right-from-bracket"></i> Logout</button></div></header>
+    <header class="panel-topbar"><div><h1 id="accountPageTitle">Marketplace Account</h1><p id="accountPageSubtitle">Manage this Marketplace business and shared legal identity.</p></div><div class="top-actions"><a class="btn btn-light" id="accountCustomerLink" href="https://desimall-customer.onrender.com/"><i class="fa-solid fa-store"></i> <span id="accountCustomerLinkText">Customer Store</span></a><button class="btn btn-light" id="sellerLogout"><i class="fa-solid fa-right-from-bracket"></i> Logout</button></div></header>
 
-    <section class="panel-card brand-preview-card">
+    <section class="panel-card hidden" id="workspaceAccountCard" style="margin-bottom:16px">
+      <div class="kyc-head">
+        <div>
+          <h2 id="workspaceAccountTitle">Business Workspace Settings</h2>
+          <p id="workspaceAccountText">Manage settings that belong only to the active business workspace.</p>
+        </div>
+        <span class="kyc-status-badge approved" id="workspaceAccountBadge">Workspace</span>
+      </div>
+      <div class="kyc-notice good" id="workspaceAccountNotice"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a class="btn btn-primary" id="workspaceManageLink" href="#"><i class="fa-solid fa-sliders"></i> <span id="workspaceManageText">Manage Workspace</span></a>
+        <a class="btn btn-light" id="workspacePublicLink" href="#"><i class="fa-solid fa-arrow-up-right-from-square"></i> Customer View</a>
+      </div>
+    </section>
+
+    <section class="panel-card brand-preview-card" id="marketplaceBrandCard">
       <div class="shop-banner-preview" id="shopBannerPreview"><div class="banner-placeholder"><i class="fa-regular fa-image"></i><span>दुकान का बैनर</span></div></div>
       <div class="shop-brand-row"><div class="shop-logo-preview" id="shopLogoPreview"><i class="fa-solid fa-store"></i></div><div><h2 id="shopPreviewName">आपकी दुकान</h2><p id="shopPreviewOwner">दुकानदार प्रोफाइल</p></div></div>
     </section>
 
-    <section class="panel-card seller-profile-card">
+    <section class="panel-card seller-profile-card" id="marketplaceProfileCard">
       <form id="sellerProfileForm" class="seller-profile-form">
         <div class="seller-avatar-editor">
           <div class="seller-avatar seller-avatar-large" id="sellerAvatarPreview"><span>S</span></div>
@@ -77,9 +94,9 @@
       </form>
     </section>
 
-    <section class="panel-card seller-kyc-card">
+    <section class="panel-card seller-kyc-card" id="sharedLegalCard">
       <div class="kyc-head">
-        <div><h2><i class="fa-solid fa-id-card"></i> दुकानदार KYC और बैंक सत्यापन</h2><p>बिक्री चालू रखने के लिए सही जानकारी भरें।</p></div>
+        <div><h2><i class="fa-solid fa-id-card"></i> <span id="sharedKycTitle">Shared Legal KYC & Settlement Bank</span></h2><p><span id="sharedKycHelp">One legal KYC/bank identity is shared across your approved DesiMall business workspaces.</span></p></div>
         <span class="kyc-status-badge" id="sellerKycStatus">Not Submitted</span>
       </div>
       <div id="kycAccessNotice" class="kyc-notice"></div>

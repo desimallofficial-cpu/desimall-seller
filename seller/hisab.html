@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Seller Wallet & Settlement - DesiMall Seller Center</title>
+<title>Earnings & Settlement - DesiMall Partner Center</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css?v=0.32.3">
 <link rel="stylesheet" href="../css/panel.css?v=0.32.3">
 <link rel="stylesheet" href="../css/global-theme.css?v=0.32.3">
 <link rel="stylesheet" href="../css/seller.css?v=0.32.3">
-<link rel="stylesheet" href="../css/seller-pro.css?v=0.32.3">
+<link rel="stylesheet" href="../css/seller-pro.css?v=0.35.1">
 <link rel="stylesheet" href="../css/seller-professional-v1-1.css?v=0.32.3">
 
 <style>
@@ -189,7 +189,7 @@
 
 <script id="dmReleaseBootstrap">
 (() => {
-  const RELEASE = 'v0.32.3';
+  const RELEASE = 'v0.35.2';
   window.DESIMALL_RELEASE = RELEASE;
   try {
     const prev = localStorage.getItem('desimall_release');
@@ -215,8 +215,8 @@
   <main class="panel-main">
     <header class="panel-topbar">
       <div>
-        <h1>Seller Wallet & Settlement</h1>
-        <p>One clear ledger for earnings, COD holds, returns, payable balance and completed payouts.</p>
+        <h1 id="walletPageTitle">Earnings & Settlement</h1>
+        <p id="walletPageSubtitle">A clear ledger for business earnings, payable balance and completed payouts.</p>
       </div>
 
       <button class="btn secondary" id="refreshHisab">
@@ -228,56 +228,56 @@
     <section class="account-kpis">
       <article class="account-kpi primary">
         <div class="kpi-top">
-          <small>Available for Payout</small>
+          <small id="walletKpiAvailableLabel">Available for Payout</small>
           <i class="fa-solid fa-wallet"></i>
         </div>
         <strong id="sellerPendingPayout">₹0</strong>
-        <span>Current seller balance ready for settlement</span>
+        <span id="walletKpiAvailableHelp">Current balance ready for settlement</span>
       </article>
 
       <article class="account-kpi">
         <div class="kpi-top">
-          <small>Net Seller Earnings</small>
+          <small id="walletKpiEarningsLabel">Net Earnings</small>
           <i class="fa-solid fa-chart-line"></i>
         </div>
         <strong id="sellerTotalEarning">₹0</strong>
-        <span>Eligible sales after return adjustments</span>
+        <span id="walletKpiEarningsHelp">Eligible earnings after adjustments</span>
       </article>
 
       <article class="account-kpi">
         <div class="kpi-top">
-          <small>Total Paid</small>
+          <small id="walletKpiPaidLabel">Total Paid</small>
           <i class="fa-solid fa-circle-check"></i>
         </div>
         <strong id="sellerPaidPayout">₹0</strong>
-        <span>Payouts already recorded</span>
+        <span id="walletKpiPaidHelp">Completed payouts already recorded</span>
       </article>
 
       <article class="account-kpi">
         <div class="kpi-top">
-          <small>COD On Hold</small>
+          <small id="walletKpiHoldLabel">Payment Pending</small>
           <i class="fa-solid fa-hourglass-half"></i>
         </div>
         <strong id="sellerCODHold">₹0</strong>
-        <span>Released after rider COD deposit</span>
+        <span id="walletKpiHoldHelp">Customer payment awaiting completion</span>
       </article>
     </section>
 
     <section class="account-strip">
       <div>
-        <small>Eligible Sales</small>
+        <small id="walletStripEligibleLabel">Eligible Value</small>
         <strong id="sellerEligibleSales">₹0</strong>
       </div>
       <div>
-        <small>Return Adjustments</small>
+        <small id="walletStripAdjustLabel">Adjustments</small>
         <strong id="sellerReturnAdjustments">₹0</strong>
       </div>
       <div>
-        <small>Marketplace Fees</small>
+        <small id="walletStripFeeLabel">Platform Fees</small>
         <strong id="sellerMarketplaceFees">₹0</strong>
       </div>
       <div>
-        <small>Eligible Orders</small>
+        <small id="walletStripOrdersLabel">Eligible Transactions</small>
         <strong id="sellerPaidOrders">0</strong>
       </div>
     </section>
@@ -285,16 +285,16 @@
     <section class="account-panel" style="margin-bottom:16px">
       <div class="account-panel-head">
         <div>
-          <h2>Wallet Balance Breakdown</h2>
-          <p>Eligible earnings − returns − payouts = current payable balance.</p>
+          <h2 id="walletBreakdownTitle">Wallet Balance Breakdown</h2>
+          <p id="walletBreakdownHelp">Eligible earnings − payouts = current payable balance.</p>
         </div>
       </div>
       <div class="account-strip" style="margin:0;border:0;border-radius:0;background:transparent;grid-template-columns:repeat(5,minmax(0,1fr))">
-        <div><small>Historical Delivered Gross</small><strong id="sellerDeliveredGross">₹0</strong></div>
-        <div><small>Payment Pending</small><strong id="sellerPaymentPending">₹0</strong></div>
-        <div><small>COD Hold Orders</small><strong id="sellerCODHoldOrders">0</strong></div>
-        <div><small>COD Review / Blocked</small><strong id="sellerCODReview">₹0</strong><span id="sellerCODReviewOrders" style="display:block;margin-top:4px;font-size:11px;color:#9fb0c4">0 orders</span></div>
-        <div><small>Recovery / Adjustment Due</small><strong id="sellerRecoveryDue">₹0</strong></div>
+        <div><small id="walletBreakdownGrossLabel">Historical Gross</small><strong id="sellerDeliveredGross">₹0</strong></div>
+        <div><small id="walletBreakdownPendingLabel">Payment Pending</small><strong id="sellerPaymentPending">₹0</strong></div>
+        <div><small id="walletBreakdownHoldLabel">On Hold</small><strong id="sellerCODHoldOrders">0</strong></div>
+        <div><small id="walletBreakdownReviewLabel">Review / Blocked</small><strong id="sellerCODReview">₹0</strong><span id="sellerCODReviewOrders" style="display:block;margin-top:4px;font-size:11px;color:#9fb0c4">0 orders</span></div>
+        <div><small id="walletBreakdownRecoveryLabel">Adjustment Due</small><strong id="sellerRecoveryDue">₹0</strong></div>
       </div>
       <div id="sellerRecoveryAlert" class="account-note" style="display:none;margin:0 14px 14px;border-color:#70402f;background:#2a1b17;color:#ffc2ad"></div>
       <div id="sellerCODReviewAlert" class="account-note" style="display:none;margin:0 14px 14px;border-color:#6a5425;background:#272115;color:#ffe0৮০"></div>
@@ -303,8 +303,8 @@
       <article class="account-panel">
         <div class="account-panel-head">
           <div>
-            <h2>Account Activity</h2>
-            <p>Every balance-changing event stays visible here for audit and dispute checking.</p>
+            <h2 id="walletActivityTitle">Account Activity</h2>
+            <p id="walletActivityHelp">Every balance-changing event stays visible here for audit and dispute checking.</p>
           </div>
         </div>
 
@@ -314,10 +314,10 @@
               <tr>
                 <th>Date</th>
                 <th>Activity</th>
-                <th>Order / Reference</th>
-                <th>Status</th>
-                <th>Fee</th>
-                <th>Seller Amount</th>
+                <th id="walletReferenceHeading">Reference</th>
+                <th id="walletStatusHeading">Status</th>
+                <th id="walletFeeHeading">Fee</th>
+                <th id="walletAmountHeading">Amount</th>
               </tr>
             </thead>
             <tbody id="sellerHisabBody">
@@ -332,8 +332,8 @@
       <article class="account-panel">
         <div class="account-panel-head">
           <div>
-            <h2>Payout History</h2>
-            <p>Completed seller payments and transaction references.</p>
+            <h2 id="walletPayoutTitle">Payout History</h2>
+            <p id="walletPayoutHelp">Completed payouts and transaction references.</p>
           </div>
         </div>
 
@@ -343,9 +343,9 @@
       </article>
     </section>
 
-    <div class="account-note">
+    <div class="account-note" id="walletHowItWorks">
       <strong>How payout works:</strong>
-      Prepaid orders become eligible after successful payment confirmation. COD orders become eligible after rider cash is fully reconciled. "COD On Hold" contains only COD cash actually recorded with a rider. Older delivered COD records with no collection evidence are kept blocked and shown separately as "COD Review" so they cannot inflate live cash-hold figures or accidentally become payable.
+      Completed and successfully paid transactions become eligible for settlement.
     </div>
   </main>
 </div>
@@ -353,9 +353,9 @@
 <div class="toast" id="sellerHisabToast"></div>
 
 <script src="../js/api.js?v=0.32.3"></script>
-<script src="../js/seller-hisab.js?v=0.32.3"></script>
-<script src="../js/seller-pro.js?v=0.32.3"></script>
-<script src="../js/seller-shell.js?v=0.32.3"></script>
+<script src="../js/seller-hisab.js?v=0.35.1"></script>
+<script src="../js/seller-pro.js?v=0.35.1"></script>
+<script src="../js/seller-shell.js?v=0.35.1"></script>
 <script src="../js/seller-simple.js?v=0.32.3"></script>
 </body>
 </html>
