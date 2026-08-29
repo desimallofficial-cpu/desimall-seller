@@ -50,3 +50,77 @@ body{
   .panel-topbar h1{font-size:25px!important}
   .panel-main{padding:18px 12px 36px!important}
 }
+
+
+/* ===== Seller Tez + privacy polish v0.29.8 ===== */
+.seller-order-card.seller-order-tez{
+  border-color:rgba(255,107,0,.46);
+  box-shadow:0 0 0 1px rgba(255,107,0,.07) inset;
+}
+.seller-order-code-row{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:9px;
+}
+.seller-tez-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:4px 8px;
+  border-radius:999px;
+  background:rgba(255,107,0,.16);
+  color:#ff9a52;
+  font-size:10px;
+  font-weight:900;
+}
+.seller-tez-priority{
+  margin:0 16px;
+  padding:10px 12px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+  border:1px solid rgba(255,107,0,.28);
+  border-radius:10px;
+  background:linear-gradient(90deg,rgba(255,107,0,.12),rgba(255,107,0,.035));
+}
+.seller-tez-priority>i{color:#ff7a1a;font-size:18px}
+.seller-tez-priority strong{display:block;color:#fff;font-size:12px}
+.seller-tez-priority span{display:block;margin-top:2px;color:#9fb2c8;font-size:10px;line-height:1.45}
+.seller-private-note{
+  display:inline-flex!important;
+  align-items:center;
+  gap:5px;
+  margin-top:4px;
+  color:#7f93aa!important;
+  font-size:10px!important;
+}
+.seller-private-note i{color:#42d39a}
+.seller-delivery-address{
+  max-width:52%;
+  text-align:right;
+  line-height:1.55;
+}
+.seller-delivery-address span:first-child{
+  display:block;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+.order-status-actions .btn{cursor:pointer}
+.order-status-actions .btn-primary{
+  background:#ff6b00!important;
+  border-color:#ff6b00!important;
+  color:#fff!important;
+}
+.order-status-actions .btn-danger{
+  background:transparent!important;
+  border-color:rgba(244,63,94,.55)!important;
+  color:#ff8095!important;
+}
+.order-status-actions .btn-danger:hover{background:rgba(244,63,94,.10)!important}
+.seller-details-btn{background:#142033!important}
+@media(max-width:760px){
+  .seller-order-customer{align-items:flex-start}
+  .seller-delivery-address{max-width:100%;text-align:left}
+  .seller-tez-priority{margin:0 10px}
+}
