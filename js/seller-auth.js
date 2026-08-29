@@ -4,22 +4,27 @@ const SellerAuth = {
   sellerGps: null,
 
   init() {
+    const loginForm = document.getElementById('sellerLoginForm');
+    const registerForm = document.getElementById('sellerRegisterForm');
+
+    // seller-auth.js is a login/register-page controller only.
+    // Protected seller pages are handled by SellerShell.
+    // This guard prevents an accidental script include from redirecting
+    // an authenticated seller back to orders.html.
+    if (!loginForm && !registerForm) return;
+
     this.bindTabs();
     this.bindSellerGps();
 
-    document
-      .getElementById('sellerLoginForm')
-      ?.addEventListener('submit', event => {
-        event.preventDefault();
-        this.login();
-      });
+    loginForm?.addEventListener('submit', event => {
+      event.preventDefault();
+      this.login();
+    });
 
-    document
-      .getElementById('sellerRegisterForm')
-      ?.addEventListener('submit', event => {
-        event.preventDefault();
-        this.register();
-      });
+    registerForm?.addEventListener('submit', event => {
+      event.preventDefault();
+      this.register();
+    });
 
     this.checkExistingSession();
   },
