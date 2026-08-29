@@ -72,8 +72,8 @@
         `}
         <div class="seller-pro-nav-section">Business</div>
         <a class="${active('returns.html')}" href="returns.html"><i class="fa-solid fa-arrow-rotate-left"></i><span>Returns</span></a>
-        <a class="${active('hisab.html')}" href="hisab.html"><i class="fa-solid fa-wallet"></i><span>Payouts & Account</span></a>
-        <a class="${active('support.html')}" href="support.html"><i class="fa-solid fa-headset"></i><span>Support</span></a>
+        <a class="${active('hisab.html')}" href="hisab.html"><i class="fa-solid fa-wallet"></i><span>Shared Payouts & Account</span></a>
+        <a class="${active('support.html')}" href="support.html"><i class="fa-solid fa-headset"></i><span>Account Support</span></a>
         <a class="${active('profile.html')}" href="profile.html"><i class="fa-solid fa-gear"></i><span>Account Settings</span></a>
       </nav>
       <div class="seller-pro-sidebar-bottom"><a class="seller-pro-store-link" href="${w==='food'?'https://desimall-customer.onrender.com/pages/food.html':'../index.html'}"><i class="fa-solid fa-arrow-up-right-from-square"></i> View customer ${w==='food'?'food store':'store'}</a></div>`;

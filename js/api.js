@@ -2122,8 +2122,14 @@ const DesiMallAPI = {
     );
   },
 
-  getSellerReturns(token) {
-    return this._sellerRest('/api/v1/seller/returns', {
+  getSellerReturns(token, workspace = '') {
+    const scope = String(
+      workspace || localStorage.getItem('desimall_seller_workspace') || ''
+    ).toLowerCase();
+    const qs = ['food','marketplace'].includes(scope)
+      ? `?workspace=${encodeURIComponent(scope)}`
+      : '';
+    return this._sellerRest(`/api/v1/seller/returns${qs}`, {
       method: 'GET',
       token
     });

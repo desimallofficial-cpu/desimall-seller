@@ -82,7 +82,12 @@ const SellerOrders = {
     let r;
 
     try{
-      r=await DesiMallAPI.getSellerOrders(this.session.token);
+      r=await DesiMallAPI.getSellerOrders(
+        this.session.token,
+        new URLSearchParams(location.search).get('workspace') ||
+        localStorage.getItem('desimall_seller_workspace') ||
+        ''
+      );
       this.session=this.readSession();
     }catch(error){
       if(error?.status===401||error?.code==='SELLER_SESSION_ENDED'){
@@ -97,7 +102,12 @@ const SellerOrders = {
         await new Promise(resolve=>setTimeout(resolve,700));
 
         try{
-          r=await DesiMallAPI.getSellerOrders(this.session.token);
+          r=await DesiMallAPI.getSellerOrders(
+        this.session.token,
+        new URLSearchParams(location.search).get('workspace') ||
+        localStorage.getItem('desimall_seller_workspace') ||
+        ''
+      );
           this.session=this.readSession();
         }catch(secondError){
           if(secondError?.status===401||secondError?.code==='SELLER_SESSION_ENDED'){
