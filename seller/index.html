@@ -3,9 +3,29 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Seller Dashboard - DesiMall</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-<link rel="stylesheet" href="../css/panel.css"><link rel="stylesheet" href="../css/global-theme.css"><link rel="stylesheet" href="../css/seller.css"><link rel="stylesheet" href="../css/seller-simple.css"><link rel="stylesheet" href="../css/seller-pro.css">
-<link rel="stylesheet" href="../css/seller-professional-v1-1.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css?v=0.32.3">
+<link rel="stylesheet" href="../css/panel.css?v=0.32.3"><link rel="stylesheet" href="../css/global-theme.css?v=0.32.3"><link rel="stylesheet" href="../css/seller.css?v=0.32.3"><link rel="stylesheet" href="../css/seller-simple.css?v=0.32.3"><link rel="stylesheet" href="../css/seller-pro.css?v=0.32.3">
+<link rel="stylesheet" href="../css/seller-professional-v1-1.css?v=0.32.3">
+
+<script id="dmReleaseBootstrap">
+(() => {
+  const RELEASE = 'v0.32.3';
+  window.DESIMALL_RELEASE = RELEASE;
+  try {
+    const prev = localStorage.getItem('desimall_release');
+    if (prev !== RELEASE) {
+      localStorage.setItem('desimall_release', RELEASE);
+      if ('caches' in window) {
+        caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k)))).catch(() => {});
+      }
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.update())).catch(() => {});
+      }
+    }
+  } catch (_) {}
+})();
+</script>
+
 </head>
 <body data-seller-page="dashboard">
 <div class="panel-shell">
@@ -30,5 +50,5 @@
   <article class="seller-dashboard-panel"><h3>Business tools</h3><div class="seller-checklist"><div><i class="fa-solid fa-wallet"></i><a href="hisab.html">Payouts & Account</a></div><div><i class="fa-solid fa-headset"></i><a href="support.html">Seller Support</a></div><div><i class="fa-solid fa-store-gear"></i><a href="profile.html">Store Profile & KYC</a></div></div></article>
 </section>
 </main></div>
-<script src="../js/api.js"></script><script src="../js/seller-pro.js"></script><script src="../js/seller-shell.js"></script><script src="../js/seller-simple.js"></script>
+<script src="../js/api.js?v=0.32.3"></script><script src="../js/seller-pro.js?v=0.32.3"></script><script src="../js/seller-shell.js?v=0.32.3"></script><script src="../js/seller-simple.js?v=0.32.3"></script>
 </body></html>

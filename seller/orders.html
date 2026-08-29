@@ -4,11 +4,31 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Orders - DesiMall</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <link rel="stylesheet" href="../css/panel.css">
-  <link rel="stylesheet" href="../css/global-theme.css">
-  <link rel="stylesheet" href="../css/seller.css">
-<link rel="stylesheet" href="../css/seller-simple.css"><link rel="stylesheet" href="../css/seller-pro.css"><link rel="stylesheet" href="../css/seller-professional-v1-1.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css?v=0.32.3">
+  <link rel="stylesheet" href="../css/panel.css?v=0.32.3">
+  <link rel="stylesheet" href="../css/global-theme.css?v=0.32.3">
+  <link rel="stylesheet" href="../css/seller.css?v=0.32.3">
+<link rel="stylesheet" href="../css/seller-simple.css?v=0.32.3"><link rel="stylesheet" href="../css/seller-pro.css?v=0.32.3"><link rel="stylesheet" href="../css/seller-professional-v1-1.css?v=0.32.3">
+
+<script id="dmReleaseBootstrap">
+(() => {
+  const RELEASE = 'v0.32.3';
+  window.DESIMALL_RELEASE = RELEASE;
+  try {
+    const prev = localStorage.getItem('desimall_release');
+    if (prev !== RELEASE) {
+      localStorage.setItem('desimall_release', RELEASE);
+      if ('caches' in window) {
+        caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k)))).catch(() => {});
+      }
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.update())).catch(() => {});
+      }
+    }
+  } catch (_) {}
+})();
+</script>
+
 </head>
 <body>
 <div class="panel-shell">
@@ -42,7 +62,7 @@
       <div class="card-head catalogue-head">
         <div><h2>Orders पर्ची</h2><p class="muted">दुकानदार Products तैयार करके राइडर को सौंपेगा; Next की डिलीवरी राइडर संभालेगा।</p></div>
         <div class="catalogue-tools">
-          <input id="orderSearch" placeholder="Orders, ग्राहक, मोबाइल या Products खोजें">
+          <input id="orderSearch" placeholder="Order ID, customer name or product खोजें">
           <select id="orderStatusFilter">
             <option value="">All Statuses</option>
             <option value="Pending">नया Orders</option><option value="Accepted">Approved किया</option><option value="Preparing">तैयार हो रहा</option><option value="Ready for Pickup">राइडर के लिए तैयार</option><option value="Pickup Assigned">राइडर तय</option><option value="Picked Up">राइडर ने लिया</option><option value="On the Way">रास्ते में</option><option value="Delivered">डिलीवर हो गया</option><option value="Rejected">अApproved</option><option value="Cancelled">रद्द</option><option value="Returned">Returns</option></select>
@@ -92,8 +112,8 @@
 </div>
 
 <div class="toast-panel" id="panelToast"></div>
-<script src="../js/api.js"></script><script src="../js/seller-pro.js"></script><script src="../js/seller-shell.js"></script>
-<script src="../js/seller-orders.js"></script>
-<script src="../js/ui-preferences.js"></script>
-<script src="../js/seller-simple.js"></script></body>
+<script src="../js/api.js?v=0.32.3"></script><script src="../js/seller-pro.js?v=0.32.3"></script><script src="../js/seller-shell.js?v=0.32.3"></script>
+<script src="../js/seller-orders.js?v=0.32.3"></script>
+<script src="../js/ui-preferences.js?v=0.32.3"></script>
+<script src="../js/seller-simple.js?v=0.32.3"></script></body>
 </html>

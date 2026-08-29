@@ -4,13 +4,33 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Seller Profile - DesiMall</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <link rel="stylesheet" href="../css/panel.css">
-  <link rel="stylesheet" href="../css/global-theme.css">
-  <link rel="stylesheet" href="../css/seller.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css?v=0.32.3">
+  <link rel="stylesheet" href="../css/panel.css?v=0.32.3">
+  <link rel="stylesheet" href="../css/global-theme.css?v=0.32.3">
+  <link rel="stylesheet" href="../css/seller.css?v=0.32.3">
 <style>
 .kyc-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px}.kyc-head h2{margin:0 0 6px}.kyc-head p{margin:0;color:var(--muted,#94a3b8)}.kyc-status-badge{padding:8px 12px;border-radius:999px;background:#334155;font-weight:800}.kyc-status-badge.approved{background:#166534;color:#bbf7d0}.kyc-status-badge.submitted,.kyc-status-badge.pending{background:#854d0e;color:#fde68a}.kyc-status-badge.rejected{background:#7f1d1d;color:#fecaca}.kyc-notice{padding:12px 14px;border-radius:10px;background:#1e293b;margin-bottom:18px;color:#cbd5e1}.kyc-notice.good{background:#14532d;color:#dcfce7}.kyc-notice.bad{background:#7f1d1d;color:#fee2e2}.kyc-form select,.kyc-form input[type=file]{width:100%}.doc-link{display:inline-block;margin-top:8px;color:#fb923c;font-weight:700}.hidden{display:none!important}.kyc-review-box{padding:14px;border:1px solid #334155;border-radius:10px;background:#111827}.kyc-review-box p{margin:8px 0}.kyc-review-box small{color:#94a3b8}@media(max-width:700px){.kyc-head{flex-direction:column}}
-</style><link rel="stylesheet" href="../css/seller-simple.css"><link rel="stylesheet" href="../css/seller-pro.css"><link rel="stylesheet" href="../css/seller-professional-v1-1.css">
+</style><link rel="stylesheet" href="../css/seller-simple.css?v=0.32.3"><link rel="stylesheet" href="../css/seller-pro.css?v=0.32.3"><link rel="stylesheet" href="../css/seller-professional-v1-1.css?v=0.32.3">
+
+<script id="dmReleaseBootstrap">
+(() => {
+  const RELEASE = 'v0.32.3';
+  window.DESIMALL_RELEASE = RELEASE;
+  try {
+    const prev = localStorage.getItem('desimall_release');
+    if (prev !== RELEASE) {
+      localStorage.setItem('desimall_release', RELEASE);
+      if ('caches' in window) {
+        caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k)))).catch(() => {});
+      }
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.update())).catch(() => {});
+      }
+    }
+  } catch (_) {}
+})();
+</script>
+
 </head>
 <body>
 <div class="panel-shell">
@@ -37,6 +57,16 @@
           <div class="field"><label>मोबाइल</label><input id="sellerमोबाइल" readonly></div>
           <div class="field"><label>ईमेल</label><input id="sellerईमेल" type="email"></div>
           <div class="field full"><label>दुकान का पता</label><textarea id="sellerAddress" rows="4"></textarea></div>
+          <div class="field full seller-pickup-location-box">
+            <div>
+              <label>Pickup Map Location</label>
+              <p>Shop par khade hokar current location save karein. Rider ko pickup navigation isi location se milega.</p>
+              <small id="sellerPickupLocationText">Pickup GPS not saved.</small>
+            </div>
+            <button class="btn btn-light" id="saveSellerPickupLocation" type="button">
+              <i class="fa-solid fa-location-crosshairs"></i> Use Current Shop Location
+            </button>
+          </div>
 
           <div class="field"><label>दुकान का लोगो</label><label class="upload-brand-control" for="shopLogoFile"><i class="fa-solid fa-cloud-arrow-up"></i><span>लोगो चुनें</span></label><input id="shopLogoFile" type="file" accept="image/jpeg,image/png,image/webp" hidden></div>
           <div class="field"><label>दुकान का बैनर</label><label class="upload-brand-control" for="shopBannerFile"><i class="fa-solid fa-panorama"></i><span>बैनर चुनें</span></label><input id="shopBannerFile" type="file" accept="image/jpeg,image/png,image/webp" hidden></div>
@@ -76,5 +106,5 @@
     </section>
   </main>
 </div>
-<script src="../js/api.js"></script><script src="../js/seller-pro.js"></script><script src="../js/seller-shell.js"></script><script src="../js/seller-profile.js"></script><script src="../js/ui-preferences.js"></script>
-<script src="../js/seller-simple.js"></script></body></html>
+<script src="../js/api.js?v=0.32.3"></script><script src="../js/seller-pro.js?v=0.32.3"></script><script src="../js/seller-shell.js?v=0.32.3"></script><script src="../js/seller-profile.js?v=0.32.3"></script><script src="../js/ui-preferences.js?v=0.32.3"></script>
+<script src="../js/seller-simple.js?v=0.32.3"></script></body></html>

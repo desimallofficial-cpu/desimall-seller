@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Food Menu | DesiMall Seller</title>
+  <link rel="stylesheet" href="../css/panel.css">
+  <link rel="stylesheet" href="../css/seller.css">
+  <link rel="stylesheet" href="../css/seller-pro.css?v=0.33.0">
+  <link rel="stylesheet" href="../css/seller-food.css?v=0.33.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body data-seller-page="food-menu">
+<div class="panel-shell">
+  <aside class="panel-sidebar"></aside>
+  <main class="panel-main">
+    <header class="panel-topbar food-panel-top">
+      <div>
+        <h1>Food Menu</h1>
+        <p>Restaurant profile, Veg / Non-Veg menu, availability and preparation time.</p>
+      </div>
+      <div class="top-actions">
+        <a class="btn btn-light" href="https://desimall-customer.onrender.com/pages/food.html"><i class="fa-solid fa-up-right-from-square"></i> View Food Store</a>
+        <button class="btn btn-primary" id="openFoodItem"><i class="fa-solid fa-plus"></i> Add Food Item</button>
+      </div>
+    </header>
+
+    <section class="food-seller-grid">
+      <article class="food-profile-card">
+        <div class="food-card-head">
+          <div><small>RESTAURANT PROFILE</small><h2>Your Food Store</h2></div>
+          <label class="switch-label"><input type="checkbox" id="frOpen" checked><span>Open for orders</span></label>
+        </div>
+        <form id="restaurantForm" class="food-profile-form">
+          <label><span>Restaurant / Kitchen Name *</span><input id="frName" required placeholder="e.g. Sharma Kitchen"></label>
+          <label><span>Cuisines</span><input id="frCuisine" placeholder="North Indian, Biryani, Snacks"></label>
+          <label><span>Delivery Pincodes *</span><input id="frPincodes" required placeholder="801110, 800001"></label>
+          <div class="food-form-row">
+            <label><span>Minimum Order ₹</span><input id="frMinOrder" type="number" min="0" value="99"></label>
+            <label><span>Delivery Fee ₹</span><input id="frDeliveryFee" type="number" min="0" value="30"></label>
+          </div>
+          <div class="food-form-row">
+            <label><span>Prep Min (minutes)</span><input id="frPrepMin" type="number" min="5" max="180" value="20"></label>
+            <label><span>Prep Max (minutes)</span><input id="frPrepMax" type="number" min="5" max="180" value="40"></label>
+          </div>
+          <div class="food-check-row">
+            <label><input type="checkbox" id="frCOD" checked> Cash on Delivery</label>
+            <label><input type="checkbox" id="frOnline" checked> Online Payment</label>
+          </div>
+          <button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save Restaurant Profile</button>
+        </form>
+      </article>
+
+      <article class="food-guide-card">
+        <span class="food-guide-icon"><i class="fa-solid fa-shield-heart"></i></span>
+        <h2>Seller Food Checklist</h2>
+        <ul>
+          <li><i class="fa-solid fa-check"></i> Add real dish photo and exact price.</li>
+          <li><i class="fa-solid fa-check"></i> Mark Veg / Non-Veg / Egg / Vegan correctly.</li>
+          <li><i class="fa-solid fa-check"></i> Set current stock / portions available.</li>
+          <li><i class="fa-solid fa-check"></i> Keep preparation time realistic.</li>
+          <li><i class="fa-solid fa-check"></i> Turn item unavailable when sold out.</li>
+        </ul>
+        <p>Food orders will use the same DesiMall seller order flow: Accept → Preparing → Ready for Pickup → Rider delivery.</p>
+      </article>
+    </section>
+
+    <section class="panel-card food-menu-card">
+      <div class="card-head">
+        <div><h2>Menu Items</h2><p class="muted">Customer sees only active and available dishes.</p></div>
+        <div class="food-menu-tools">
+          <input id="foodMenuSearch" placeholder="Search dish or category">
+          <select id="foodTypeFilter">
+            <option value="">All Food Types</option>
+            <option value="veg">Veg</option>
+            <option value="nonveg">Non-Veg</option>
+            <option value="egg">Egg</option>
+            <option value="vegan">Vegan</option>
+          </select>
+        </div>
+      </div>
+      <div id="foodMenuList" class="seller-food-items"></div>
+    </section>
+  </main>
+</div>
+
+<div class="modal food-item-modal" id="foodItemModal">
+  <div class="modal-box food-modal-box">
+    <div class="modal-head"><h2 id="foodItemTitle">Add Food Item</h2><button class="close-btn" id="closeFoodItem"><i class="fa-solid fa-xmark"></i></button></div>
+    <form id="foodItemForm" class="food-item-form">
+      <input type="hidden" id="fiMenuId">
+      <input type="hidden" id="fiProductId">
+      <input type="hidden" id="fiImage">
+      <div class="food-form-row">
+        <label class="wide"><span>Dish Name *</span><input id="fiName" required placeholder="e.g. Paneer Butter Masala"></label>
+        <label><span>Food Type *</span><select id="fiType"><option value="veg">🟢 Veg</option><option value="nonveg">🔴 Non-Veg</option><option value="egg">🟡 Egg</option><option value="vegan">🌿 Vegan</option></select></label>
+      </div>
+      <div class="food-form-row">
+        <label><span>Menu Category *</span><select id="fiCategory"><option>Starters</option><option>Main Course</option><option>Biryani & Rice</option><option>Breads</option><option>Snacks</option><option>Breakfast</option><option>Desserts</option><option>Beverages</option><option>Combos</option><option>Other</option></select></label>
+        <label><span>Spice Level</span><select id="fiSpice"><option value="none">No spice</option><option value="mild">Mild</option><option value="medium" selected>Medium</option><option value="hot">Hot</option></select></label>
+      </div>
+      <label><span>Description</span><textarea id="fiDescription" rows="3" placeholder="Ingredients / customer-facing description"></textarea></label>
+
+      <div class="food-form-row three">
+        <label><span>MRP ₹ *</span><input id="fiMRP" type="number" min="1" step="0.01" required></label>
+        <label><span>Selling Price ₹ *</span><input id="fiPrice" type="number" min="1" step="0.01" required></label>
+        <label><span>Your Settlement ₹ *</span><input id="fiSettlement" type="number" min="1" step="0.01" required></label>
+      </div>
+
+      <div class="food-form-row three">
+        <label><span>Available Portions *</span><input id="fiStock" type="number" min="0" value="20"></label>
+        <label><span>Prep Minutes *</span><input id="fiPrep" type="number" min="1" max="180" value="20"></label>
+        <label><span>Serves</span><input id="fiServes" placeholder="1 person / 2 people"></label>
+      </div>
+
+      <label class="food-upload"><span>Dish Photo *</span><input id="fiImageFile" type="file" accept="image/jpeg,image/png,image/webp"><small id="fiImageState">Real dish photo required.</small><img id="fiImagePreview" alt=""></label>
+
+      <div class="food-check-row">
+        <label><input id="fiAvailable" type="checkbox" checked> Available now</label>
+        <label><input id="fiBestseller" type="checkbox"> Bestseller</label>
+      </div>
+
+      <button class="btn btn-primary" id="saveFoodItem" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save Food Item</button>
+    </form>
+  </div>
+</div>
+
+<div id="panelToast" class="panel-toast"></div>
+
+<script src="../js/config.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/seller-auth.js"></script>
+<script src="../js/upload.js"></script>
+<script src="../js/seller-shell.js"></script>
+<script src="../js/seller-pro.js?v=0.33.0"></script>
+<script src="../js/seller-food.js?v=0.33.0"></script>
+</body>
+</html>
