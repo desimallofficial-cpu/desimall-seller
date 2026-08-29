@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="../css/panel.css">
   <link rel="stylesheet" href="../css/seller.css">
   <link rel="stylesheet" href="../css/seller-pro.css?v=0.33.0">
-  <link rel="stylesheet" href="../css/seller-food.css?v=0.33.0">
+  <link rel="stylesheet" href="../css/seller-food.css?v=0.33.2">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body data-seller-page="food-menu">
@@ -103,8 +103,16 @@
 
       <div class="food-form-row three">
         <label><span>MRP ₹ *</span><input id="fiMRP" type="number" min="1" step="0.01" required></label>
-        <label><span>Selling Price ₹ *</span><input id="fiPrice" type="number" min="1" step="0.01" required></label>
-        <label><span>Your Settlement ₹ *</span><input id="fiSettlement" type="number" min="1" step="0.01" required></label>
+        <label><span>Your Settlement ₹ *</span><input id="fiSettlement" type="number" min="1" step="0.01" required placeholder="Amount you want to receive"></label>
+        <label><span>Customer Selling Price ₹</span><input id="fiPrice" class="food-auto-price" type="number" readonly tabindex="-1"></label>
+      </div>
+
+      <div class="food-pricing-box" id="foodPricingBox">
+        <div><span>Your settlement</span><strong id="foodSettlementPreview">₹0</strong></div>
+        <div><span>Marketplace commission <b id="foodCommissionRate">(0%)</b></span><strong id="foodCommissionPreview">+₹0</strong></div>
+        <div><span>Processing fee</span><strong id="foodFeePreview">+₹0</strong></div>
+        <div class="total"><span>Customer selling price</span><strong id="foodSellingPreview">₹0</strong></div>
+        <p id="foodPricingWarning">Enter MRP and your settlement. Selling price will be calculated automatically.</p>
       </div>
 
       <div class="food-form-row three">
@@ -117,7 +125,6 @@
 
       <div class="food-check-row">
         <label><input id="fiAvailable" type="checkbox" checked> Available now</label>
-        <label><input id="fiBestseller" type="checkbox"> Bestseller</label>
       </div>
 
       <button class="btn btn-primary" id="saveFoodItem" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save Food Item</button>
@@ -131,7 +138,7 @@
 <script src="../js/api.js"></script>
 <script src="../js/upload.js"></script>
 <script src="../js/seller-shell.js"></script>
-<script src="../js/seller-pro.js?v=0.33.1"></script>
-<script src="../js/seller-food.js?v=0.33.1"></script>
+<script src="../js/seller-pro.js?v=0.33.2"></script>
+<script src="../js/seller-food.js?v=0.33.2"></script>
 </body>
 </html>
