@@ -2554,6 +2554,28 @@ const DesiMallAPI = {
     return this._roleRest('seller',`/api/v1/seller/food/menu/${encodeURIComponent(String(menuItemId))}`,{method:'PATCH',data,token});
   },
 
+
+  // =========================================================
+  // TRY-ON AT HOME
+  // =========================================================
+
+  async getSellerTryOn(token='') {
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/tryon',{method:'GET',token});
+  },
+
+  async saveSellerTryOnProfile(data={},token='') {
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/tryon/profile',{method:'PUT',data,token});
+  },
+
+  async setSellerTryOnProduct(productId,isEnabled,token='') {
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller',`/api/v1/seller/tryon/products/${encodeURIComponent(String(productId))}`,{
+      method:'PATCH',data:{IsEnabled:Boolean(isEnabled)},token
+    });
+  },
+
   // =========================================================
   // PRODUCT MANAGEMENT
   // =========================================================

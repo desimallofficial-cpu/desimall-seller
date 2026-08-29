@@ -111,6 +111,7 @@
           <a class="${active('index.html')}" href="index.html"><i class="fa-solid fa-table-cells-large"></i><span>Store Dashboard</span></a>
           <a class="${active('orders.html')}" href="orders.html?workspace=marketplace"><i class="fa-solid fa-bag-shopping"></i><span>Store Orders</span></a>
           <a class="${active('products.html')}" href="products.html"><i class="fa-solid fa-box"></i><span>Products</span></a>
+          <a class="${active('try-on.html')}" href="try-on.html"><i class="fa-solid fa-shirt"></i><span>Try-On at Home <em style="color:#22c55e;font-style:normal;font-size:8px">Live</em></span></a>
           <a class="${active('inventory.html')}" href="inventory.html"><i class="fa-solid fa-warehouse"></i><span>Inventory</span></a>
         `}
         <div class="seller-pro-nav-section">Business Account</div>

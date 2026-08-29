@@ -238,13 +238,15 @@ const SellerOrders = {
   card(o){
     const status=o.SellerStatus||'Pending';
     const isTez=Boolean(o.IsTez||String(o.FulfillmentMode||'').toLowerCase()==='tez');
+    const isTryOn=['try_on','try-on','tryon'].includes(String(o.FulfillmentMode||'').toLowerCase());
     const targetMax=Math.min(25,Number(o.DeliveryTargetMaxMinutes||25));
     const items=(o.Items||[]).map(i=>`<div class="seller-order-item"><img src="${this.esc(i.ImageURL||'../assets/products/noimage.jpg')}" onerror="this.src='../assets/products/noimage.jpg'"><div><strong>${this.esc(i.ProductName)}</strong><span>${this.esc(i.ProductID||'')} · Qty ${i.Qty} · ${this.esc(i.UnitValue||1)} ${this.esc(i.Unit||'Piece')}</span></div><b>${this.money(this.itemAmount(i))}</b></div>`).join('');
     const buttons=this.statusButtons(o.OrderID,status);
     const reason=o.RejectedReason||o.CancelReason||o.DeliveryFailedReason||'';
     return `<article class="seller-order-card ${isTez?'seller-order-tez':''}">
-      <div class="seller-order-head"><div><div class="seller-order-code-row"><strong>${this.esc(o.OrderID)}</strong>${isTez?`<span class="seller-tez-badge"><i class="fa-solid fa-bolt"></i> Tez · ≤${targetMax} min</span>`:''}</div><span>${this.esc(o.OrderDate||'')} · ${this.esc(o.PaymentMode||'COD')}</span></div><span class="status ${this.statusClass(status)}">${this.esc(status)}</span></div>
+      <div class="seller-order-head"><div><div class="seller-order-code-row"><strong>${this.esc(o.OrderID)}</strong>${isTez?`<span class="seller-tez-badge"><i class="fa-solid fa-bolt"></i> Tez · ≤${targetMax} min</span>`:''}${isTryOn?`<span class="seller-tez-badge" style="background:#14532d"><i class="fa-solid fa-shirt"></i> Try-On at Home</span>`:''}</div><span>${this.esc(o.OrderDate||'')} · ${this.esc(o.PaymentMode||'COD')}</span></div><span class="status ${this.statusClass(status)}">${this.esc(status)}</span></div>
       ${isTez?`<div class="seller-tez-priority"><i class="fa-solid fa-stopwatch"></i><div><strong>Priority Tez order</strong><span>Accept quickly, prepare immediately, then mark Ready for pickup. The action button will continue changing with each step.</span></div></div>`:''}
+      ${isTryOn?`<div class="seller-tez-priority" style="border-color:#166534;background:rgba(34,197,94,.07)"><i class="fa-solid fa-shirt"></i><div><strong>Try-On at Home visit</strong><span>Prepare every selected item exactly as listed. Rider will take them to the customer; final Keep/Return and payment happen at the customer location.</span></div></div>`:''}
       <div class="seller-order-customer"><div class="customer-identity"><div class="customer-avatar">${this.avatar(o)}</div><div><b>${this.esc(o.CustomerName||'Customer')}</b><span class="seller-private-note"><i class="fa-solid fa-shield-halved"></i> Customer contact hidden</span></div></div><div class="seller-delivery-address"><span>${this.esc(o.DeliveryAddress||'')}</span><span>${this.esc([o.City,o.State,o.Pincode].filter(Boolean).join(', '))}</span></div></div>
       <div class="seller-order-items">${items}</div>
       ${(o.CourierName||o.TrackingID)?`<div class="shipping-info"><span><i class="fa-solid fa-truck"></i> ${this.esc(o.CourierName||'Courier')}</span><strong>${this.esc(o.TrackingID||'')}</strong></div>`:''}
