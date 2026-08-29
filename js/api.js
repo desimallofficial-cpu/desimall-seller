@@ -1960,11 +1960,22 @@ const DesiMallAPI = {
     });
   },
 
-  getSellerHisab(token) {
-    return this._sellerRest('/api/v1/seller/account', {
+  getSellerHisab(token, workspace = '') {
+    const scope = String(
+      workspace || localStorage.getItem('desimall_seller_workspace') || 'marketplace'
+    ).toLowerCase();
+    const qs = ['marketplace','food'].includes(scope)
+      ? `?workspace=${encodeURIComponent(scope)}`
+      : '';
+    return this._sellerRest(`/api/v1/seller/account${qs}`, {
       method: 'GET',
       token
     });
+  },
+
+  getSellerServiceAccount(token='') {
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/services/account',{method:'GET',token});
   },
 
   reconcileCOD(data) {
@@ -2028,13 +2039,24 @@ const DesiMallAPI = {
   },
 
 
-  getSellerSupport(token = '') {
-    return this._roleRest('seller', '/api/v1/seller/support', { method: 'GET', token });
+  getSellerSupport(token = '', workspace = '') {
+    const scope = String(
+      workspace || localStorage.getItem('desimall_seller_workspace') || 'marketplace'
+    ).toLowerCase();
+    const qs = ['marketplace','food','services'].includes(scope)
+      ? `?workspace=${encodeURIComponent(scope)}`
+      : '';
+    return this._roleRest('seller', `/api/v1/seller/support${qs}`, { method: 'GET', token });
   },
 
   createSellerSupportTicket(data = {}) {
+    const workspace = String(
+      data.Workspace || data.workspace || localStorage.getItem('desimall_seller_workspace') || 'marketplace'
+    ).toLowerCase();
     return this._roleRest('seller', '/api/v1/seller/support', {
-      method: 'POST', data, token: data.Token || data.token || ''
+      method: 'POST',
+      data: {...data, Workspace: ['marketplace','food','services'].includes(workspace) ? workspace : 'marketplace'},
+      token: data.Token || data.token || ''
     });
   },
 

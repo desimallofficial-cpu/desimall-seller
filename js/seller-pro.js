@@ -113,11 +113,23 @@
           <a class="${active('products.html')}" href="products.html"><i class="fa-solid fa-box"></i><span>Products</span></a>
           <a class="${active('inventory.html')}" href="inventory.html"><i class="fa-solid fa-warehouse"></i><span>Inventory</span></a>
         `}
-        <div class="seller-pro-nav-section">Shared Account</div>
+        <div class="seller-pro-nav-section">Business Account</div>
         ${w!=='services'?`<a class="${active('returns.html')}" href="returns.html"><i class="fa-solid fa-arrow-rotate-left"></i><span>${w==='food'?'Food Returns':'Store Returns'}</span></a>`:''}
-        <a class="${active('hisab.html')}" href="hisab.html"><i class="fa-solid fa-wallet"></i><span>Shared Payouts & Account</span></a>
-        <a class="${active('support.html')}" href="support.html"><i class="fa-solid fa-headset"></i><span>Account Support</span></a>
-        <a class="${active('profile.html')}" href="profile.html"><i class="fa-solid fa-gear"></i><span>Account Settings</span></a>
+        <a class="${active('hisab.html')}" href="hisab.html"><i class="fa-solid fa-wallet"></i><span>${
+          w==='services'?'Services Earnings & Payouts':
+          w==='food'?'Food Earnings & Payouts':
+          'Marketplace Earnings & Payouts'
+        }</span></a>
+        <a class="${active('support.html')}" href="support.html"><i class="fa-solid fa-headset"></i><span>${
+          w==='services'?'Services Support':
+          w==='food'?'Food Support':
+          'Marketplace Support'
+        }</span></a>
+        <a class="${active('profile.html')}" href="profile.html"><i class="fa-solid fa-gear"></i><span>${
+          w==='services'?'Services Account':
+          w==='food'?'Food Account':
+          'Marketplace Account'
+        }</span></a>
       </nav>
       <div class="seller-pro-sidebar-bottom"><a class="seller-pro-store-link" href="${
         w==='food'?'https://desimall-customer.onrender.com/pages/food.html':
