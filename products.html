@@ -4,19 +4,39 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Products - DesiMall Seller Center</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <link rel="stylesheet" href="../css/panel.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css?v=0.32.3">
+  <link rel="stylesheet" href="../css/panel.css?v=0.32.3">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <link rel="stylesheet" href="../css/global-theme.css">
-  <link rel="stylesheet" href="../css/seller.css">
+  <link rel="stylesheet" href="../css/global-theme.css?v=0.32.3">
+  <link rel="stylesheet" href="../css/seller.css?v=0.32.3">
 <style>
 .settlement-calculator{background:#111b2a;border:1px solid #35465f;border-radius:14px;padding:16px}.settlement-title{display:flex;justify-content:space-between;gap:12px;align-items:center;padding-bottom:10px;border-bottom:1px solid #334155}.settlement-title span{font-size:12px;color:#fdba74}.settlement-row{display:flex;justify-content:space-between;gap:14px;padding:9px 2px;color:#cbd5e1}.settlement-row.total{border-top:1px solid #334155;font-weight:800}.settlement-row.grand{border-top:1px solid #475569;font-size:18px;color:#fff;font-weight:900}.settlement-warning{margin-top:10px;padding:9px 11px;border-radius:8px;background:#78350f;color:#fef3c7}.settlement-warning.good{background:#14532d;color:#dcfce7}.settlement-warning.bad{background:#7f1d1d;color:#fee2e2}
-</style><link rel="stylesheet" href="../css/seller-simple.css"><link rel="stylesheet" href="../css/seller-product-v2.css"><link rel="stylesheet" href="../css/seller-pro.css"><link rel="stylesheet" href="../css/seller-professional-v1-1.css">
+</style><link rel="stylesheet" href="../css/seller-simple.css?v=0.32.3"><link rel="stylesheet" href="../css/seller-product-v2.css?v=0.32.3"><link rel="stylesheet" href="../css/seller-pro.css?v=0.32.3"><link rel="stylesheet" href="../css/seller-professional-v1-1.css?v=0.32.3">
 
 <style id="productPhotoRequiredV018">
 .photo-needed{display:inline-flex;align-items:center;gap:5px;margin-top:5px;padding:3px 7px;border-radius:999px;background:#4a251d;color:#ff9a74;font-size:10px;font-weight:800}
 .spv2-field.invalid .spv2-upload-box,.spv2-field.invalid input[type=file]{outline:2px solid #ef4444!important;outline-offset:2px}
 </style>
+
+<script id="dmReleaseBootstrap">
+(() => {
+  const RELEASE = 'v0.32.3';
+  window.DESIMALL_RELEASE = RELEASE;
+  try {
+    const prev = localStorage.getItem('desimall_release');
+    if (prev !== RELEASE) {
+      localStorage.setItem('desimall_release', RELEASE);
+      if ('caches' in window) {
+        caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k)))).catch(() => {});
+      }
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.update())).catch(() => {});
+      }
+    }
+  } catch (_) {}
+})();
+</script>
+
 </head>
 <body data-seller-page="products">
 <div class="panel-shell">
@@ -171,6 +191,6 @@
 </div>
 
 <div class="toast-panel" id="panelToast"></div>
-<script src="../js/api.js"></script><script src="../js/seller-pro.js"></script><script src="../js/seller-shell.js"></script><script src="../js/upload.js"></script><script src="../js/seller.js"></script><script src="../js/seller-page.js"></script><script src="../js/ui-preferences.js"></script><script src="../js/analytics.js"></script>
-<script src="../js/seller-simple.js"></script></body>
+<script src="../js/api.js?v=0.32.3"></script><script src="../js/seller-pro.js?v=0.36.0"></script><script src="../js/seller-shell.js?v=0.36.0"></script><script src="../js/upload.js?v=0.32.3"></script><script src="../js/seller.js?v=0.32.3"></script><script src="../js/seller-page.js?v=0.32.3"></script><script src="../js/ui-preferences.js?v=0.32.3"></script><script src="../js/analytics.js?v=0.32.3"></script>
+<script src="../js/seller-simple.js?v=0.32.3"></script></body>
 </html>

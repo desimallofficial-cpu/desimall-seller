@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Try-On at Home | DesiMall Seller</title>
+<link rel="stylesheet" href="../css/panel.css">
+<link rel="stylesheet" href="../css/seller.css">
+<link rel="stylesheet" href="../css/seller-pro.css?v=0.36.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+.to-hero{border:1px solid #34445a;background:linear-gradient(115deg,#14243b,#182238 58%,#4a2516);border-radius:18px;padding:22px;margin:18px 0;display:flex;align-items:center;justify-content:space-between;gap:18px}.to-hero .eyebrow{font-size:9px;font-weight:900;color:#fb923c}.to-hero h1{font-size:27px;margin:5px 0}.to-hero p{font-size:10px;color:#9fb0c5;margin:0;max-width:720px}
+.to-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:15px}.to-card{background:#111c2b;border:1px solid #334155;border-radius:15px;padding:17px}.to-card h2{margin:0 0 5px}.to-muted{color:#94a3b8;font-size:9px}.to-form{display:grid;gap:11px;margin-top:14px}.to-form label{display:grid;gap:5px}.to-form label>span{font-size:9px;font-weight:800;color:#cbd5e1}.to-form input,.to-form select{border:1px solid #334155;background:#0d1725;color:#fff;border-radius:9px;padding:10px;font:inherit;font-size:10px}.to-row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.to-row.three{grid-template-columns:repeat(3,1fr)}.to-switch{display:flex!important;grid-template-columns:auto 1fr!important;align-items:center;gap:9px!important;background:#0d1725;border:1px solid #334155;border-radius:10px;padding:11px}.to-switch input{width:auto;accent-color:#ff6500}.to-note{font-size:8.5px;color:#94a3b8;border:1px dashed #40516a;border-radius:10px;padding:10px;line-height:1.5}
+.to-toolbar{display:flex;gap:8px;margin:12px 0}.to-toolbar input{flex:1;border:1px solid #334155;background:#0d1725;color:#fff;border-radius:9px;padding:9px;font-size:10px}.to-products{display:grid;gap:8px;max-height:610px;overflow:auto}.to-product{display:grid;grid-template-columns:58px 1fr auto;gap:10px;align-items:center;border:1px solid #334155;background:#0f1a28;border-radius:11px;padding:9px}.to-product img{width:58px;height:58px;object-fit:cover;border-radius:9px;background:#18283d}.to-product h3{font-size:10px;margin:0 0 3px}.to-product p{font-size:8px;color:#94a3b8;margin:0}.to-toggle{border:1px solid #3a4d65;background:#152236;color:#cbd5e1;border-radius:8px;padding:8px 9px;font-size:8px;font-weight:900;cursor:pointer}.to-toggle.on{border-color:#166534;color:#4ade80;background:rgba(34,197,94,.08)}.to-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:12px}.to-stat{border:1px solid #334155;border-radius:11px;padding:11px;background:#0d1725}.to-stat small{font-size:8px;color:#94a3b8}.to-stat strong{display:block;font-size:18px;margin-top:3px}
+@media(max-width:1000px){.to-grid{grid-template-columns:1fr}}@media(max-width:650px){.to-row,.to-row.three{grid-template-columns:1fr}.to-hero{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="panel-shell"><aside class="panel-sidebar"></aside><main class="panel-main">
+<section class="to-hero"><div><span class="eyebrow">MARKETPLACE · TRY-ON LIVE</span><h1>Try-On at Home</h1><p>Offer selected products for a home fitting visit. Customer can choose what to keep and return the rest immediately with the rider.</p></div><a class="btn btn-light" href="orders.html?workspace=marketplace"><i class="fa-solid fa-bag-shopping"></i> Store Orders</a></section>
+<section class="to-grid">
+<article class="to-card"><h2>Try-On Business Settings</h2><p class="to-muted">Choose where and when Try-On visits can be booked.</p>
+<form id="tryOnProfileForm" class="to-form">
+<label class="to-switch"><input id="toEnabled" type="checkbox"><span><b>Try-On at Home is live</b><br><small class="to-muted">Customers can book eligible products only while this is enabled.</small></span></label>
+<label><span>Service Pincodes *</span><input id="toPincodes" placeholder="801110, 800001"></label>
+<div class="to-row three"><label><span>Visit Fee ₹</span><input id="toVisitFee" type="number" min="0" value="49"></label><label><span>Max Items / Visit</span><select id="toMaxItems"><option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option></select></label><label><span>Trial Time</span><select id="toTrial"><option value="10">10 min</option><option value="15" selected>15 min</option><option value="20">20 min</option><option value="30">30 min</option></select></label></div>
+<div class="to-row"><label><span>Booking Start Time</span><input id="toStart" type="time" value="10:00"></label><label><span>Booking End Time</span><input id="toEnd" type="time" value="19:00"></label></div>
+<div class="to-row"><label><span>Advance Booking Window</span><select id="toAdvance"><option value="3">3 days</option><option value="7" selected>7 days</option><option value="14">14 days</option><option value="30">30 days</option></select></label><label><span>Slot Interval</span><select id="toInterval"><option value="30">30 min</option><option value="60" selected>60 min</option><option value="90">90 min</option><option value="120">120 min</option></select></label></div>
+<div class="to-note"><b>Payment:</b> Try-On uses <b>Pay After Try-On</b>. Rider verifies delivery OTP, marks each item Keep/Return and collects only the final kept-item amount + visit fee. Returned items go back to inventory automatically.</div>
+<button class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Save Try-On Settings</button>
+</form></article>
+
+<article class="to-card"><h2>Eligible Products</h2><p class="to-muted">Enable Try-On only for products that can safely be tried at the customer's home.</p>
+<div class="to-stats"><div class="to-stat"><small>Total Products</small><strong id="toTotal">0</strong></div><div class="to-stat"><small>Try-On Enabled</small><strong id="toLive">0</strong></div><div class="to-stat"><small>Visible to Customer</small><strong id="toVisible">0</strong></div></div>
+<div class="to-toolbar"><input id="toSearch" placeholder="Search product"><select id="toFilter"><option value="">All Products</option><option value="live">Try-On Enabled</option><option value="off">Not Enabled</option></select></div>
+<div id="toProducts" class="to-products"></div>
+</article>
+</section>
+</main></div>
+<div class="toast-panel" id="panelToast"></div>
+<script src="../js/config.js"></script><script src="../js/api.js?v=0.36.0"></script><script src="../js/seller-pro.js?v=0.36.0"></script><script src="../js/seller-shell.js?v=0.36.0"></script><script src="../js/seller-tryon.js?v=0.36.0"></script>
+</body></html>
