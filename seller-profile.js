@@ -1,9 +1,11 @@
 document.addEventListener('DOMContentLoaded',()=>SellerProfile.init());
 const SellerProfile={
- key:'desimall_seller_session',session:null,files:{avatar:null,logo:null,banner:null},kycFiles:{aadhaar:null,pan:null,gst:null,bank:null},
+ key:'desimall_seller_session',session:null,workspace:'marketplace',files:{avatar:null,logo:null,banner:null},kycFiles:{aadhaar:null,pan:null,gst:null,bank:null},
  read(){try{return JSON.parse(localStorage.getItem(this.key))||{};}catch(_){return{};}},
  async init(){
   this.session=this.read();if(!this.session.token){location.replace('login.html');return;}
+  this.workspace=localStorage.getItem('desimall_seller_workspace')||this.session?.primaryWorkspace?.Type||'marketplace';
+  this.applyWorkspaceUI();
   let r;try{r=await DesiMallAPI.sellerSession(this.session.token);}catch(_){r={success:false,message:'Network unavailable'};}
   if(!r.success){const m=String(r.message||r.error||'').toLowerCase();if(/invalid|expired|unauthor|login again|session not found|token/.test(m)){localStorage.removeItem(this.key);location.replace('login.html?reason=session');return;}if(!this.session.seller){this.msg(r.message||'Session verify nahi ho paayi.');return;}}
   else{this.session.seller=r.seller||this.session.seller;localStorage.setItem(this.key,JSON.stringify(this.session));}
@@ -17,6 +19,61 @@ const SellerProfile={
   aadhaarDoc.onchange=e=>this.selectKyc('aadhaar',e.target.files[0]);panDoc.onchange=e=>this.selectKyc('pan',e.target.files[0]);gstDoc.onchange=e=>this.selectKyc('gst',e.target.files[0]);bankDoc.onchange=e=>this.selectKyc('bank',e.target.files[0]);
   sellerShopName.oninput=()=>shopPreviewName.textContent=sellerShopName.value||'Your Shop';sellerOwnerName.oninput=()=>shopPreviewOwner.textContent=sellerOwnerName.value||'Seller profile';
   sellerLogout.onclick=()=>{localStorage.removeItem(this.key);location.replace('login.html');};
+ },
+
+ applyWorkspaceUI(){
+  const w=this.workspace;
+  const brand=document.getElementById('marketplaceBrandCard');
+  const profile=document.getElementById('marketplaceProfileCard');
+  const workspaceCard=document.getElementById('workspaceAccountCard');
+  const title=document.getElementById('accountPageTitle');
+  const subtitle=document.getElementById('accountPageSubtitle');
+  const customer=document.getElementById('accountCustomerLink');
+  const customerText=document.getElementById('accountCustomerLinkText');
+  const wt=document.getElementById('workspaceAccountTitle');
+  const wx=document.getElementById('workspaceAccountText');
+  const wn=document.getElementById('workspaceAccountNotice');
+  const ml=document.getElementById('workspaceManageLink');
+  const mt=document.getElementById('workspaceManageText');
+  const pl=document.getElementById('workspacePublicLink');
+
+  if(w==='food'){
+    document.title='Food Business Account - DesiMall';
+    if(title)title.textContent='Food Business Account';
+    if(subtitle)subtitle.textContent='Restaurant settings stay inside Food workspace; legal KYC and settlement bank remain shared.';
+    brand?.classList.add('hidden');profile?.classList.add('hidden');workspaceCard?.classList.remove('hidden');
+    if(wt)wt.textContent='Food & Restaurant Workspace';
+    if(wx)wx.textContent='Restaurant name, cuisines, delivery pincodes, minimum order, delivery fee, preparation time and payment modes belong to Food only.';
+    if(wn)wn.innerHTML='<strong>Food isolation:</strong> Marketplace store branding/products and Services provider settings cannot be edited from this Food account.';
+    if(ml)ml.href='food-menu.html';if(mt)mt.textContent='Manage Restaurant Profile & Menu';
+    if(pl)pl.href='https://desimall-customer.onrender.com/pages/food.html';
+    if(customer)customer.href='https://desimall-customer.onrender.com/pages/food.html';
+    if(customerText)customerText.textContent='Customer Food';
+  }else if(w==='services'){
+    document.title='Services Business Account - DesiMall';
+    if(title)title.textContent='Services Business Account';
+    if(subtitle)subtitle.textContent='Provider settings stay inside Services workspace; legal KYC and settlement bank remain shared.';
+    brand?.classList.add('hidden');profile?.classList.add('hidden');workspaceCard?.classList.remove('hidden');
+    if(wt)wt.textContent='Services Provider Workspace';
+    if(wx)wx.textContent='Service verticals, provider name, pincodes, visit charge, availability, working hours, team and booking controls belong to Services only.';
+    if(wn)wn.innerHTML='<strong>Services isolation:</strong> Marketplace store and Food restaurant settings are hidden here to prevent cross-business changes.';
+    if(ml)ml.href='services-dashboard.html';if(mt)mt.textContent='Manage Services Provider Profile';
+    if(pl)pl.href='https://desimall-customer.onrender.com/pages/services.html';
+    if(customer)customer.href='https://desimall-customer.onrender.com/pages/services.html';
+    if(customerText)customerText.textContent='Customer Services';
+  }else{
+    document.title='Marketplace Account - DesiMall';
+    if(title)title.textContent='Marketplace Account';
+    if(subtitle)subtitle.textContent='Manage Marketplace store identity, pickup location and shared legal KYC.';
+    brand?.classList.remove('hidden');profile?.classList.remove('hidden');workspaceCard?.classList.add('hidden');
+    if(customer)customer.href='https://desimall-customer.onrender.com/';
+    if(customerText)customerText.textContent='Customer Store';
+  }
+
+  const kycTitle=document.getElementById('sharedKycTitle');
+  const kycHelp=document.getElementById('sharedKycHelp');
+  if(kycTitle)kycTitle.textContent='Shared Legal KYC & Settlement Bank';
+  if(kycHelp)kycHelp.textContent='PAN/Aadhaar/GST/bank ownership belongs to the seller/provider legal identity, so it is shared across Marketplace, Food and Services. Business catalogs, orders, support and wallets remain workspace-specific.';
  },
  fill(s){sellerShopName.value=s.ShopName||'';sellerOwnerName.value=s.SellerName||'';sellerMobile.value=s.Mobile||'';sellerEmail.value=s.Email||'';sellerAddress.value=s.Address||'';this.showAvatar(s.ProfileImage||'',s.SellerName||s.ShopName);this.showLogo(s.ShopLogo||'');this.showBanner(s.ShopBanner||'');shopPreviewName.textContent=s.ShopName||'Your Shop';shopPreviewOwner.textContent=s.SellerName||'Seller profile';const hasGps=Number.isFinite(Number(s.PickupLatitude))&&Number.isFinite(Number(s.PickupLongitude));sellerPickupLocationText.textContent=hasGps?`Saved: ${Number(s.PickupLatitude).toFixed(5)}, ${Number(s.PickupLongitude).toFixed(5)}`:'Pickup GPS not saved.';},
  fillKyc(s){

@@ -1960,11 +1960,22 @@ const DesiMallAPI = {
     });
   },
 
-  getSellerHisab(token) {
-    return this._sellerRest('/api/v1/seller/account', {
+  getSellerHisab(token, workspace = '') {
+    const scope = String(
+      workspace || localStorage.getItem('desimall_seller_workspace') || 'marketplace'
+    ).toLowerCase();
+    const qs = ['marketplace','food'].includes(scope)
+      ? `?workspace=${encodeURIComponent(scope)}`
+      : '';
+    return this._sellerRest(`/api/v1/seller/account${qs}`, {
       method: 'GET',
       token
     });
+  },
+
+  getSellerServiceAccount(token='') {
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/services/account',{method:'GET',token});
   },
 
   reconcileCOD(data) {
@@ -2028,13 +2039,24 @@ const DesiMallAPI = {
   },
 
 
-  getSellerSupport(token = '') {
-    return this._roleRest('seller', '/api/v1/seller/support', { method: 'GET', token });
+  getSellerSupport(token = '', workspace = '') {
+    const scope = String(
+      workspace || localStorage.getItem('desimall_seller_workspace') || 'marketplace'
+    ).toLowerCase();
+    const qs = ['marketplace','food','services'].includes(scope)
+      ? `?workspace=${encodeURIComponent(scope)}`
+      : '';
+    return this._roleRest('seller', `/api/v1/seller/support${qs}`, { method: 'GET', token });
   },
 
   createSellerSupportTicket(data = {}) {
+    const workspace = String(
+      data.Workspace || data.workspace || localStorage.getItem('desimall_seller_workspace') || 'marketplace'
+    ).toLowerCase();
     return this._roleRest('seller', '/api/v1/seller/support', {
-      method: 'POST', data, token: data.Token || data.token || ''
+      method: 'POST',
+      data: {...data, Workspace: ['marketplace','food','services'].includes(workspace) ? workspace : 'marketplace'},
+      token: data.Token || data.token || ''
     });
   },
 
@@ -2122,8 +2144,14 @@ const DesiMallAPI = {
     );
   },
 
-  getSellerReturns(token) {
-    return this._sellerRest('/api/v1/seller/returns', {
+  getSellerReturns(token, workspace = '') {
+    const scope = String(
+      workspace || localStorage.getItem('desimall_seller_workspace') || ''
+    ).toLowerCase();
+    const qs = ['food','marketplace'].includes(scope)
+      ? `?workspace=${encodeURIComponent(scope)}`
+      : '';
+    return this._sellerRest(`/api/v1/seller/returns${qs}`, {
       method: 'GET',
       token
     });
@@ -2388,6 +2416,166 @@ const DesiMallAPI = {
     );
   },
 
+
+
+  async getSellerWorkspaces(token=''){
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/workspaces',{method:'GET',token});
+  },
+
+  async activateSellerWorkspace(type,displayName='',token=''){
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/workspaces/activate',{
+      method:'POST',token,data:{WorkspaceType:type,DisplayName:displayName}
+    });
+  },
+
+  async setPrimarySellerWorkspace(type,token=''){
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller',`/api/v1/seller/workspaces/${encodeURIComponent(type)}/primary`,{method:'PATCH',token,data:{}});
+  },
+
+
+  // =========================================================
+  // SERVICES BUSINESS
+  // =========================================================
+
+  async getServiceVerticals() {
+    return this._roleRest('seller','/api/services/verticals',{method:'GET'});
+  },
+
+  async getSellerServicesProfile(token='') {
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/services/profile',{method:'GET',token});
+  },
+
+  async saveSellerServicesProfile(data={},token='') {
+    token=token||data.Token||data.token||'';
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/services/profile',{method:'PUT',data,token});
+  },
+
+
+  async addSellerServiceBlockedDate(data={},token='') {
+    token=token||data.Token||data.token||'';
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/services/blocked-dates',{method:'POST',data,token});
+  },
+
+  async deleteSellerServiceBlockedDate(blockedDateId,token='') {
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller',`/api/v1/seller/services/blocked-dates/${encodeURIComponent(blockedDateId)}`,{method:'DELETE',token});
+  },
+
+  async submitCustomServiceVertical(data={},token='') {
+    token=token||data.Token||data.token||'';
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/services/custom-vertical',{method:'POST',data,token});
+  },
+
+  async getSellerServicePackages(token='') {
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/services/packages',{method:'GET',token});
+  },
+
+  async addSellerServicePackage(data={},token='') {
+    token=token||data.Token||data.token||'';
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/services/packages',{method:'POST',data,token});
+  },
+
+  async updateSellerServicePackage(packageId,data={},token='') {
+    token=token||data.Token||data.token||'';
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller',`/api/v1/seller/services/packages/${encodeURIComponent(packageId)}`,{method:'PATCH',data,token});
+  },
+
+  async addSellerServiceTeamMember(data={},token='') {
+    token=token||data.Token||data.token||'';
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/services/team',{method:'POST',data,token});
+  },
+
+  async getSellerServiceBookings(token='') {
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/services/bookings',{method:'GET',token});
+  },
+
+  async updateSellerServiceBooking(bookingId,data={},token='') {
+    token=token||data.Token||data.token||'';
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller',`/api/v1/seller/services/bookings/${encodeURIComponent(bookingId)}`,{method:'PATCH',data,token});
+  },
+
+  async collectSellerServicePayment(bookingId,token='') {
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller',`/api/v1/seller/services/bookings/${encodeURIComponent(bookingId)}/collect-payment`,{method:'POST',data:{},token});
+  },
+
+  // =========================================================
+  // FOOD RESTAURANT + MENU MANAGEMENT
+  // =========================================================
+
+  async getSellerFoodRestaurant(token = '') {
+    if (!token) {
+      try { token = JSON.parse(localStorage.getItem('desimall_seller_session') || '{}')?.token || ''; } catch (_) {}
+    }
+    return this._roleRest('seller','/api/v1/seller/food/restaurant',{method:'GET',token});
+  },
+
+  async saveSellerFoodRestaurant(data = {}) {
+    let token = data.Token || data.token || '';
+    if (!token) {
+      try { token = JSON.parse(localStorage.getItem('desimall_seller_session') || '{}')?.token || ''; } catch (_) {}
+    }
+    return this._roleRest('seller','/api/v1/seller/food/restaurant',{method:'PUT',data,token});
+  },
+
+  async getSellerFoodMenu(token = '') {
+    if (!token) {
+      try { token = JSON.parse(localStorage.getItem('desimall_seller_session') || '{}')?.token || ''; } catch (_) {}
+    }
+    return this._roleRest('seller','/api/v1/seller/food/menu',{method:'GET',token});
+  },
+
+  async addSellerFoodItem(data = {}) {
+    let token = data.Token || data.token || '';
+    if (!token) {
+      try { token = JSON.parse(localStorage.getItem('desimall_seller_session') || '{}')?.token || ''; } catch (_) {}
+    }
+    return this._roleRest('seller','/api/v1/seller/food/menu',{method:'POST',data,token});
+  },
+
+  async updateSellerFoodItem(menuItemId, data = {}) {
+    let token = data.Token || data.token || '';
+    if (!token) {
+      try { token = JSON.parse(localStorage.getItem('desimall_seller_session') || '{}')?.token || ''; } catch (_) {}
+    }
+    return this._roleRest('seller',`/api/v1/seller/food/menu/${encodeURIComponent(String(menuItemId))}`,{method:'PATCH',data,token});
+  },
+
+
+  // =========================================================
+  // TRY-ON AT HOME
+  // =========================================================
+
+  async getSellerTryOn(token='') {
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/tryon',{method:'GET',token});
+  },
+
+  async saveSellerTryOnProfile(data={},token='') {
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller','/api/v1/seller/tryon/profile',{method:'PUT',data,token});
+  },
+
+  async setSellerTryOnProduct(productId,isEnabled,token='') {
+    if(!token){try{token=JSON.parse(localStorage.getItem('desimall_seller_session')||'{}')?.token||'';}catch(_){}}
+    return this._roleRest('seller',`/api/v1/seller/tryon/products/${encodeURIComponent(String(productId))}`,{
+      method:'PATCH',data:{IsEnabled:Boolean(isEnabled)},token
+    });
+  },
+
   // =========================================================
   // PRODUCT MANAGEMENT
   // =========================================================
@@ -2509,3 +2697,5 @@ async function getCategories() {
 async function getBanners() {
   return DesiMallAPI.getBanners();
 }
+  getSellerServiceKyc(serviceKey, token=''){return this._roleRest('seller', `/api/v1/seller/service-kyc?serviceKey=${encodeURIComponent(serviceKey||'')}`, {method:'GET',token});},
+  submitSellerServiceKyc(serviceKey,documents,requiredDocuments=[],token=''){return this._roleRest('seller','/api/v1/seller/service-kyc/submit',{method:'POST',data:{serviceKey,documents,requiredDocuments},token});},

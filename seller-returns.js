@@ -48,7 +48,8 @@ const SellerReturns={
 
   async load(){
     try{
-      const r=await DesiMallAPI.getSellerReturns(this.session.token);
+      const workspace=localStorage.getItem('desimall_seller_workspace')||'marketplace';
+      const r=await DesiMallAPI.getSellerReturns(this.session.token,workspace);
 
       this.rows=r.returns||[];
 
@@ -118,7 +119,7 @@ const SellerReturns={
       : `<div class="support-empty seller-return-empty">
           <i class="fa-solid fa-box-open"></i>
           <strong>No returns found</strong>
-          <span>Returns for your products will appear here.</span>
+          <span>Returns for this business workspace will appear here.</span>
         </div>`;
   },
 

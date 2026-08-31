@@ -23,7 +23,25 @@ const SellerShell = {
     const verifiedAt=Number(session.verifiedAt||0);
     if(session.seller&&Date.now()-verifiedAt<300000)return;
     let r;try{r=await DesiMallAPI.sellerSession(session.token);}catch(_){return;}
-    if(r.success){session.seller=r.seller||session.seller;session.verifiedAt=Date.now();if(r.expiresAt)session.expiresAt=r.expiresAt;localStorage.setItem(this.key,JSON.stringify(session));this.apply(session.seller);}
+    if(r.success){
+      session.seller=r.seller||session.seller;
+      session.verifiedAt=Date.now();
+      if(r.expiresAt)session.expiresAt=r.expiresAt;
+      try{
+        const wr=await DesiMallAPI.getSellerWorkspaces(session.token);
+        if(wr?.success){
+          session.workspaces=wr.workspaces||[];
+          session.primaryWorkspace=wr.primary||null;
+          localStorage.setItem('desimall_seller_workspaces',JSON.stringify(session.workspaces));
+          if(!localStorage.getItem('desimall_seller_workspace')){
+            localStorage.setItem('desimall_seller_workspace',wr.primary?.Type||'marketplace');
+          }
+        }
+      }catch(_){}
+      localStorage.setItem(this.key,JSON.stringify(session));
+      this.apply(session.seller);
+      window.SellerProWorkspace?.refresh?.();
+    }
   }
 };
 document.addEventListener('DOMContentLoaded',()=>SellerShell.init());

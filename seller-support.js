@@ -1,14 +1,50 @@
 const SellerSupport={
-session:null,tickets:[],selectedId:'',attachment:null,pollTimer:null,lastUpdated:'',
+session:null,workspace:'marketplace',tickets:[],selectedId:'',attachment:null,pollTimer:null,lastUpdated:'',
 esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));},
 date(v){if(!v)return '—';const d=new Date(v);return isNaN(d)?String(v):d.toLocaleString('hi-IN',{dateStyle:'medium',timeStyle:'short'});},
 toast(m){panelToast.textContent=m;panelToast.classList.add('show');setTimeout(()=>panelToast.classList.remove('show'),2500);},
-async init(){this.session=JSON.parse(localStorage.getItem('desimall_seller_session')||'null');if(!this.session?.token){location.href='login.html';return;}newTicketBtn.onclick=()=>ticketModal.classList.add('show');closeTicketModal.onclick=()=>ticketModal.classList.remove('show');ticketModal.onclick=e=>{if(e.target===ticketModal)ticketModal.classList.remove('show')};refreshSupport.onclick=()=>this.load();ticketFilter.onchange=()=>this.renderList();ticketForm.onsubmit=e=>{e.preventDefault();this.create()};ticketAttachment.onchange=e=>this.pick(e.target.files[0]);await this.load();
+async init(){this.session=JSON.parse(localStorage.getItem('desimall_seller_session')||'null');if(!this.session?.token){location.href='login.html';return;}this.workspace=localStorage.getItem('desimall_seller_workspace')||this.session?.primaryWorkspace?.Type||'marketplace';this.applyWorkspaceUI();newTicketBtn.onclick=()=>ticketModal.classList.add('show');closeTicketModal.onclick=()=>ticketModal.classList.remove('show');ticketModal.onclick=e=>{if(e.target===ticketModal)ticketModal.classList.remove('show')};refreshSupport.onclick=()=>this.load();ticketFilter.onchange=()=>this.renderList();ticketForm.onsubmit=e=>{e.preventDefault();this.create()};ticketAttachment.onchange=e=>this.pick(e.target.files[0]);await this.load();
 this.startPolling();
 document.addEventListener('visibilitychange',()=>{if(document.hidden)this.stopPolling();else{this.startPolling();this.load(true);}});
 },
+
+applyWorkspaceUI(){
+const cfg={
+marketplace:{
+ title:'Marketplace Support',
+ subtitle:'Get help for Marketplace products, inventory, store orders, returns and Marketplace payouts.',
+ identity:'Marketplace Store Support',
+ text:'Only Marketplace support tickets are shown in this workspace.',
+ categories:['Store Orders','Marketplace Payments / Payouts','Products','Inventory','Marketplace Returns','Store Delivery / Rider','Marketplace Account','Other']
+},
+food:{
+ title:'Food & Restaurant Support',
+ subtitle:'Get help for Food menu, Food orders, restaurant delivery, Food returns and Food payouts.',
+ identity:'Food Business Support',
+ text:'Food issues stay separate from Marketplace and Services support.',
+ categories:['Food Orders','Food Payments / Payouts','Menu & Restaurant','Food Availability','Food Returns','Food Delivery / Rider','Food Business Account','Other']
+},
+services:{
+ title:'Services Business Support',
+ subtitle:'Get help for service bookings, provider profile, service packages, customer payment and Services payouts.',
+ identity:'Services Provider Support',
+ text:'Only Services Business issues and tickets appear here.',
+ categories:['Service Bookings','Services Payments / Payouts','Services & Pricing','Provider Profile','Service Areas / Slots','Technician / Team','Services Business Account','Other']
+}
+}[this.workspace]||null;
+if(!cfg)return;
+document.title=`${cfg.title} - DesiMall`;
+if(window.supportPageTitle)supportPageTitle.textContent=cfg.title;
+if(window.supportPageSubtitle)supportPageSubtitle.textContent=cfg.subtitle;
+if(window.supportIdentityTitle)supportIdentityTitle.textContent=cfg.identity;
+if(window.supportIdentityText)supportIdentityText.textContent=cfg.text;
+if(window.supportListTitle)supportListTitle.textContent=`${cfg.title} Tickets`;
+if(window.supportListHelp)supportListHelp.textContent='Tickets from other business workspaces are intentionally hidden.';
+if(window.supportModalTitle)supportModalTitle.textContent=`New ${cfg.title} Ticket`;
+ticketCategory.innerHTML='<option value="">Choose</option>'+cfg.categories.map(x=>`<option>${this.esc(x)}</option>`).join('');
+},
 async load(silent=false){
-const r=await DesiMallAPI.getSellerSupport(this.session.token);
+const r=await DesiMallAPI.getSellerSupport(this.session.token,this.workspace);
 if(!r.success){sellerSupportLive.innerHTML='<i class="fa-solid fa-circle"></i> ऑफलाइन';if(!silent)this.toast(r.message||'मदद टिकट लोड नहीं हुए।');return;}
 sellerSupportLive.innerHTML='<i class="fa-solid fa-circle"></i> लाइव';
 this.tickets=r.tickets||[];const s=r.stats||{};
@@ -29,7 +65,7 @@ startPolling(){this.stopPolling();this.pollTimer=setInterval(()=>{if(!document.h
 stopPolling(){if(this.pollTimer){clearInterval(this.pollTimer);this.pollTimer=null;}},
 async pick(file){this.attachment=null;attachmentPreview.innerHTML='';if(!file)return;if(file.size>5*1024*1024){this.toast('फाइल 5 MB से छोटी रखें।');ticketAttachment.value='';return;}const reader=new FileReader();reader.onload=()=>{this.attachment={FileName:file.name,MimeType:file.type,Base64Data:reader.result};attachmentPreview.innerHTML=`<img src="${reader.result}" alt="preview">`};reader.readAsDataURL(file);},
 async uploadAttachment(){if(!this.attachment)return {success:true};return DesiMallAPI.uploadProductImage({...this.attachment,Token:this.session.token});},
-async create(){submitTicketBtn.disabled=true;submitTicketBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Sending...';const up=await this.uploadAttachment();if(!up.success){submitTicketBtn.disabled=false;submitTicketBtn.innerHTML='Submit Ticket';this.toast(up.message||'Screenshot upload failed.');return;}const r=await DesiMallAPI.createSellerSupportTicket({Token:this.session.token,Category:ticketCategory.value,Priority:ticketPriority.value,Subject:ticketSubject.value,Description:ticketDescription.value,AttachmentURL:up.imageUrl||'',AttachmentName:up.fileName||''});submitTicketBtn.disabled=false;submitTicketBtn.innerHTML='<i class="fa-solid fa-paper-plane"></i> Submit Ticket';if(!r.success){this.toast(r.message||'Ticket could not be created.');return;}ticketForm.reset();attachmentPreview.innerHTML='';this.attachment=null;ticketModal.classList.remove('show');this.selectedId=r.ticketId;this.toast(`${r.ticketId} created.`);await this.load();
+async create(){submitTicketBtn.disabled=true;submitTicketBtn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Sending...';const up=await this.uploadAttachment();if(!up.success){submitTicketBtn.disabled=false;submitTicketBtn.innerHTML='Submit Ticket';this.toast(up.message||'Screenshot upload failed.');return;}const r=await DesiMallAPI.createSellerSupportTicket({Token:this.session.token,Workspace:this.workspace,Category:ticketCategory.value,Priority:ticketPriority.value,Subject:ticketSubject.value,Description:ticketDescription.value,AttachmentURL:up.imageUrl||'',AttachmentName:up.fileName||''});submitTicketBtn.disabled=false;submitTicketBtn.innerHTML='<i class="fa-solid fa-paper-plane"></i> Submit Ticket';if(!r.success){this.toast(r.message||'Ticket could not be created.');return;}ticketForm.reset();attachmentPreview.innerHTML='';this.attachment=null;ticketModal.classList.remove('show');this.selectedId=r.ticketId;this.toast(`${r.ticketId} created.`);await this.load();
 this.startPolling();
 document.addEventListener('visibilitychange',()=>{if(document.hidden)this.stopPolling();else{this.startPolling();this.load(true);}});
 },
